@@ -1,0 +1,45 @@
+---
+title: "changed R2"
+author: "R.G. Thomas"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+fontsize: 11pt
+geometry: "left=3cm,right=5cm,top=2cm,bottom=2cm"
+output:
+  pdf_document:
+    toc: true
+    number_sections: true
+    highlight: tango
+    keep_tex: true
+    includes:
+      in_header: "~/shr/preamble.tex"
+---
+
+```{r include=F, echo=F}
+# clear env: objects and packages
+rm(list = ls())
+options(
+  knitr.kable.NA = "", dplyr.summarise.inform = FALSE,
+  dplyr.print_max = 1e9, knitr.table.format = "latex"
+)
+library(pacman)
+p_load(janitor, kableExtra, tidyverse, knitr, lubridate, readxl)
+
+opts_chunk$set(
+  warning = FALSE, message = FALSE, echo = FALSE, fig.width = 3.2,
+  fig.height = 3, results = "asis", dev = "pdf",
+  opts_chunk$set(cache.path = "cache/")
+)
+source("~/shr/zz.tools.R")
+options(scipen = 1, digits = 2)
+```
+
+# Introduction
+
+
+\bibliography{x23.bib}
+\bibliographystyle{plain}
+\nocite{*}
+
+
+
+

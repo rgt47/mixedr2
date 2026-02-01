@@ -1,0 +1,14 @@
+Package: mixedr2
+Title: R-Squared for Mixed Effects Models
+Version: 0.0.0.9000
+Authors@R:
+    person("Ronald G.", "Thomas", email = "rthomas@ucsd.edu", role = c("aut", "cre"))
+Description: Methods for computing and interpreting R-squared in mixed effects models.
+License: GPL-3
+Encoding: UTF-8
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.2.0
+Imports:
+    renv,
+    testthat (>= 3.0.0)
+Config/testthat/edition: 3
