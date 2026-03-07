@@ -105,7 +105,10 @@ run_scenario <- function(scenario_row,
   if (use_parallel) {
     results <- furrr::future_map_dfr(
       seeds, run_one,
-      .options = furrr::furrr_options(seed = NULL)
+      .options = furrr::furrr_options(
+        seed = NULL,
+        packages = "mixedr2"
+      )
     )
   } else {
     results <- purrr::map_dfr(seeds, run_one)
