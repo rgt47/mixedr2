@@ -673,4 +673,4 @@ of adequate sample sizes for reliable $R^2$ estimation in
 multilevel designs and support the routine reporting of both
 marginal and conditional $R^2$ alongside convergence diagnostics.
 
-\bibliography{references}
+# References
