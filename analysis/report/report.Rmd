@@ -7,6 +7,7 @@ fontsize: 11pt
 geometry: 'left=2.5cm,right=2.5cm,top=2.5cm,bottom=2.5cm'
 output:
   pdf_document:
+    latex_engine: xelatex
     toc: true
     number_sections: true
     highlight: tango
@@ -14,6 +15,7 @@ output:
     citation_package: natbib
 bibliography: references.bib
 biblio-style: apalike
+link-citations: true
 ---
 
 ```{r setup, include=FALSE}
