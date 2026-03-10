@@ -4,7 +4,7 @@ title: 'Comparing R-Squared Measures for Linear Mixed Models:
 author: 'R.G. Thomas'
 date: '`r format(Sys.time(), "%d %B, %Y")`'
 fontsize: 11pt
-geometry: 'left=2.5cm,right=2.5cm,top=2.5cm,bottom=2.5cm'
+geometry: 'left=3cm,right=5cm,top=2cm,bottom=2cm'
 output:
   pdf_document:
     latex_engine: xelatex
