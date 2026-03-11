@@ -16,10 +16,14 @@ Imports:
     furrr,
     future,
     ggplot2,
+    kableExtra,
+    knitr,
     lme4,
+    mixedr2,
     MuMIn,
+    performance,
     purrr,
-    stats,
+    r2glmm,
     tibble,
     tidyr
 Suggests:
