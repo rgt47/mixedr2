@@ -2,7 +2,7 @@
 title: 'Comparing R-Squared Measures for Linear Mixed Models:
   A Monte Carlo Simulation Study'
 author: 'R.G. Thomas'
-date: '`r format(Sys.time(), "%d %B, %Y")`'
+date: '`r format(Sys.Date(), "%B %d, %Y")`'
 fontsize: 11pt
 geometry: 'left=3cm,right=5cm,top=2cm,bottom=2cm'
 output:
@@ -12,9 +12,8 @@ output:
     number_sections: true
     highlight: tango
     keep_tex: true
-    citation_package: natbib
 bibliography: references.bib
-biblio-style: apalike
+csl: statistics-in-medicine.csl
 link-citations: true
 ---
 
