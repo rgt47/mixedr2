@@ -675,3 +675,20 @@ multilevel designs and support the routine reporting of both
 marginal and conditional $R^2$ alongside convergence diagnostics.
 
 # References
+
+## Morris et al. (2019) ADEMP Compliance
+
+This simulation study was audited against the reporting standards
+proposed by Morris, White, and Crowther [-@morris2019using]. The full
+audit is at `docs/morris-audit-2026-04-17.md`.
+
+**Verdict:** Mostly compliant.
+
+**Key gaps identified:**
+
+- `n_sim = 500` not documented with an explicit Monte Carlo SE justification.
+- `RNGkind('L\'Ecuyer-CMRG')` not pinned.
+- Post-run `.Random.seed` not captured per replicate; coverage is not among the reported performance measures.
+
+A remediation plan is documented in the audit file and will be
+executed in a subsequent revision.

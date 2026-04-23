@@ -5,7 +5,7 @@
   11pt,
 ]{article}
 \usepackage{xcolor}
-\usepackage[left=2.5cm,right=2.5cm,top=2.5cm,bottom=2.5cm]{geometry}
+\usepackage[left=3cm,right=5cm,top=2cm,bottom=2cm]{geometry}
 \usepackage{amsmath,amssymb}
 \setcounter{secnumdepth}{5}
 \usepackage{iftex}
@@ -53,11 +53,42 @@
 % Set default figure placement to htbp
 \def\fps@figure{htbp}
 \makeatother
+% definitions for citeproc citations
+\NewDocumentCommand\citeproctext{}{}
+\NewDocumentCommand\citeproc{mm}{%
+  \begingroup\def\citeproctext{#2}\cite{#1}\endgroup}
+\makeatletter
+ % allow citations to break across lines
+ \let\@cite@ofmt\@firstofone
+ % avoid brackets around text for \cite:
+ \def\@biblabel#1{}
+ \def\@cite#1#2{{#1\if@tempswa , #2\fi}}
+\makeatother
+\newlength{\cslhangindent}
+\setlength{\cslhangindent}{1.5em}
+\newlength{\csllabelwidth}
+\setlength{\csllabelwidth}{3em}
+\newenvironment{CSLReferences}[2] % #1 hanging-indent, #2 entry-spacing
+ {\begin{list}{}{%
+  \setlength{\itemindent}{0pt}
+  \setlength{\leftmargin}{0pt}
+  \setlength{\parsep}{0pt}
+  % turn on hanging indent if param 1 is 1
+  \ifodd #1
+   \setlength{\leftmargin}{\cslhangindent}
+   \setlength{\itemindent}{-1\cslhangindent}
+  \fi
+  % set entry spacing
+  \setlength{\itemsep}{#2\baselineskip}}}
+ {\end{list}}
+\usepackage{calc}
+\newcommand{\CSLBlock}[1]{\hfill\break\parbox[t]{\linewidth}{\strut\ignorespaces#1\strut}}
+\newcommand{\CSLLeftMargin}[1]{\parbox[t]{\csllabelwidth}{\strut#1\strut}}
+\newcommand{\CSLRightInline}[1]{\parbox[t]{\linewidth - \csllabelwidth}{\strut#1\strut}}
+\newcommand{\CSLIndent}[1]{\hspace{\cslhangindent}#1}
 \setlength{\emergencystretch}{3em} % prevent overfull lines
 \providecommand{\tightlist}{%
   \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
-\usepackage[]{natbib}
-\bibliographystyle{apalike}
 \usepackage{booktabs}
 \usepackage{longtable}
 \usepackage{array}
@@ -84,7 +115,7 @@
 \title{Comparing R-Squared Measures for Linear Mixed Models: A Monte
 Carlo Simulation Study}
 \author{R.G. Thomas}
-\date{07 March, 2026}
+\date{April 19, 2026}
 
 \begin{document}
 \maketitle
@@ -122,12 +153,14 @@ Despite the availability of several \(R^2\) measures for LMMs, no
 systematic simulation study has compared their statistical properties
 under controlled conditions where the true variance-explained is known
 analytically. The present study addresses this gap. We compare the two
-most widely used approaches -- \citet{nakagawaGeneralSimpleMethod2013}
-and \citet{johnsonExtensionNakagawaSchielzeth2014} -- via Monte Carlo
-simulation following the ADEMP framework
-\citep{morrisUsingSimulationStudies2019}. Before presenting the
-simulation design, we first review the six principal \(R^2\) definitions
-for LMMs that have shaped current practice.
+most widely used approaches
+--\textsuperscript{\citeproc{ref-nakagawaGeneralSimpleMethod2013}{1}}
+and\textsuperscript{\citeproc{ref-johnsonExtensionNakagawaSchielzeth2014}{2}}
+-- via Monte Carlo simulation following the ADEMP
+framework\textsuperscript{\citeproc{ref-morrisUsingSimulationStudies2019}{3}}.
+Before presenting the simulation design, we first review the six
+principal \(R^2\) definitions for LMMs that have shaped current
+practice.
 
 \subsection{R-Squared Measures for Linear Mixed
 Models}\label{r-squared-measures-for-linear-mixed-models}
@@ -144,10 +177,10 @@ distinct ways.
 \subsubsection{Nakagawa and Schielzeth
 (2013)}\label{nakagawa-and-schielzeth-2013}
 
-\citet{nakagawaGeneralSimpleMethod2013} proposed what has become the
-most widely adopted framework, distinguishing two quantities. The
-\emph{marginal} \(R^2\) (\(R^2_m\)) captures the proportion of variance
-explained by fixed effects alone:
+\textsuperscript{\citeproc{ref-nakagawaGeneralSimpleMethod2013}{1}}
+proposed what has become the most widely adopted framework,
+distinguishing two quantities. The \emph{marginal} \(R^2\) (\(R^2_m\))
+captures the proportion of variance explained by fixed effects alone:
 
 \[R^2_m = \frac{\sigma^2_f}{\sigma^2_f + \sigma^2_\alpha + \sigma^2_\varepsilon}\]
 
@@ -159,31 +192,33 @@ effects as explained variance:
 
 \[R^2_c = \frac{\sigma^2_f + \sigma^2_\alpha}{\sigma^2_f + \sigma^2_\alpha + \sigma^2_\varepsilon}\]
 
-This approach is implemented in \texttt{MuMIn::r.squaredGLMM()}
-\citep{bartonMuMIn2024} and \texttt{performance::r2\_nakagawa()}
-\citep{ludeckePerformanceAssessment2021}. Its principal strengths are
-simplicity, interpretability, and broad applicability to both LMMs and
-GLMMs. The marginal/conditional distinction maps naturally onto research
-questions about population-average versus cluster-specific prediction.
-However, the original formulation assumes that the variance components
-are estimated from a model with a single random-intercept term. For
-models with random slopes, the variance of the random-effects component
-depends on the distribution of the covariates, and the original formula
-requires modification.
+This approach is implemented in
+\texttt{MuMIn::r.squaredGLMM()}\textsuperscript{\citeproc{ref-bartonMuMIn2024}{4}}
+and
+\texttt{performance::r2\_nakagawa()}\textsuperscript{\citeproc{ref-ludeckePerformanceAssessment2021}{5}}.
+Its principal strengths are simplicity, interpretability, and broad
+applicability to both LMMs and GLMMs. The marginal/conditional
+distinction maps naturally onto research questions about
+population-average versus cluster-specific prediction. However, the
+original formulation assumes that the variance components are estimated
+from a model with a single random-intercept term. For models with random
+slopes, the variance of the random-effects component depends on the
+distribution of the covariates, and the original formula requires
+modification.
 
 \subsubsection{Johnson (2014)}\label{johnson-2014}
 
-\citet{johnsonExtensionNakagawaSchielzeth2014} extended the
-Nakagawa-Schielzeth framework to random-slope models by deriving the
-expected variance of the random-effects contribution conditional on the
-observed design matrix. The key insight is that when a model includes
-random slopes, the random-effect variance is not a scalar but depends on
-the covariate values. Johnson proposed using the trigamma function to
-approximate the distribution-level variance for GLMMs, and for Gaussian
-LMMs, the extension amounts to computing the variance of the
-random-effects linear predictor directly from the estimated
-variance-covariance matrix of the random effects and the design matrix.
-This method is accessed via
+\textsuperscript{\citeproc{ref-johnsonExtensionNakagawaSchielzeth2014}{2}}
+extended the Nakagawa-Schielzeth framework to random-slope models by
+deriving the expected variance of the random-effects contribution
+conditional on the observed design matrix. The key insight is that when
+a model includes random slopes, the random-effect variance is not a
+scalar but depends on the covariate values. Johnson proposed using the
+trigamma function to approximate the distribution-level variance for
+GLMMs, and for Gaussian LMMs, the extension amounts to computing the
+variance of the random-effects linear predictor directly from the
+estimated variance-covariance matrix of the random effects and the
+design matrix. This method is accessed via
 \texttt{MuMIn::r.squaredGLMM(method\ =\ "trigamma")}.
 
 The Johnson extension preserves the marginal/conditional distinction and
@@ -191,14 +226,15 @@ is backward-compatible with Nakagawa-Schielzeth for intercept-only
 models. Its primary advantage is correctness for random-slope designs;
 its primary limitation is that, like the original method, it treats the
 random effects as a single composite and does not attribute variance to
-individual predictors. \citet{nakagawaUpdatedArticleCoefficient2017}
+individual
+predictors.\textsuperscript{\citeproc{ref-nakagawaUpdatedArticleCoefficient2017}{6}}
 subsequently unified these approaches in an updated treatment.
 
 \subsubsection{Edwards et al.~(2008)}\label{edwards-et-al.-2008}
 
-\citet{edwardsR2StatisticFixed2008} proposed a likelihood-ratio-based
-\(R^2\) specifically for the fixed-effects portion of an LMM. Their
-statistic is defined as:
+\textsuperscript{\citeproc{ref-edwardsR2StatisticFixed2008}{7}} proposed
+a likelihood-ratio-based \(R^2\) specifically for the fixed-effects
+portion of an LMM. Their statistic is defined as:
 
 \[R^2_{LR} = 1 - \frac{L(\hat{\beta} = 0)}{L(\hat{\beta})}\]
 
@@ -219,14 +255,15 @@ components which change with model specification.
 
 \subsubsection{Jaeger et al.~(2017)}\label{jaeger-et-al.-2017}
 
-\citet{jaegerR2glmmSemiPartialR22017} extended the Edwards et al.
-framework by introducing \emph{semi-partial} \(R^2\) statistics that
-decompose the fixed-effect \(R^2\) into contributions from individual
-predictors or sets of predictors. Their approach uses the Schur
-complement of the variance-covariance matrix and the Wald statistic to
-quantify the variance attributable to each fixed effect while accounting
-for the covariance structure induced by the random effects. This is
-implemented in \texttt{r2glmm::r2beta(method\ =\ "sgv")}.
+\textsuperscript{\citeproc{ref-jaegerR2glmmSemiPartialR22017}{8}}
+extended the Edwards et al. framework by introducing \emph{semi-partial}
+\(R^2\) statistics that decompose the fixed-effect \(R^2\) into
+contributions from individual predictors or sets of predictors. Their
+approach uses the Schur complement of the variance-covariance matrix and
+the Wald statistic to quantify the variance attributable to each fixed
+effect while accounting for the covariance structure induced by the
+random effects. This is implemented in
+\texttt{r2glmm::r2beta(method\ =\ "sgv")}.
 
 Semi-partial \(R^2\) values are particularly useful when the research
 question concerns the unique contribution of a specific predictor rather
@@ -239,14 +276,15 @@ addresses only fixed-effect variance and does not produce a conditional
 
 \subsubsection{Xu (2003)}\label{xu-2003}
 
-\citet{xuMeasuringExplainedVariation2003} proposed level-specific
-\(R^2\) measures that separately quantify the variance explained at each
-level of the multilevel hierarchy. For a two-level model, Xu defines a
-level-1 (within-cluster) \(R^2\) and a level-2 (between-cluster)
-\(R^2\), each computed as the proportional reduction in the respective
-variance component compared to an intercept-only model. This approach
-shares conceptual ground with the earlier proposal of
-\citet{snijdersExplainedVariationMultilevel1994}.
+\textsuperscript{\citeproc{ref-xuMeasuringExplainedVariation2003}{9}}
+proposed level-specific \(R^2\) measures that separately quantify the
+variance explained at each level of the multilevel hierarchy. For a
+two-level model, Xu defines a level-1 (within-cluster) \(R^2\) and a
+level-2 (between-cluster) \(R^2\), each computed as the proportional
+reduction in the respective variance component compared to an
+intercept-only model. This approach shares conceptual ground with the
+earlier proposal
+of\textsuperscript{\citeproc{ref-snijdersExplainedVariationMultilevel1994}{10}}.
 
 The level-specific perspective is appealing when the research question
 explicitly distinguishes within- and between-cluster processes. Its
@@ -259,11 +297,11 @@ no widely used R package provides this statistic directly.
 \subsubsection{\texorpdfstring{The \texttt{performance} Package
 Implementation}{The performance Package Implementation}}\label{the-performance-package-implementation}
 
-The \texttt{performance} package
-\citep{ludeckePerformanceAssessment2021} provides
-\texttt{r2\_nakagawa()}, which implements the Nakagawa-Schielzeth
-framework with the Johnson extension for random slopes. Although the
-statistical method is nominally identical to
+The \texttt{performance}
+package\textsuperscript{\citeproc{ref-ludeckePerformanceAssessment2021}{5}}
+provides \texttt{r2\_nakagawa()}, which implements the
+Nakagawa-Schielzeth framework with the Johnson extension for random
+slopes. Although the statistical method is nominally identical to
 \texttt{MuMIn::r.squaredGLMM()}, implementation details differ. The
 \texttt{performance} package computes the fixed-effect variance from the
 model matrix directly, whereas \texttt{MuMIn} uses the variance of the
@@ -308,10 +346,11 @@ comparison in future work (see Discussion).
 
 \section{Simulation Design}\label{simulation-design}
 
-The simulation follows the ADEMP framework
-\citep{morrisUsingSimulationStudies2019}, which structures simulation
-studies around five components: Aims, Data-generating mechanisms,
-Estimands, Methods, and Performance measures.
+The simulation follows the ADEMP
+framework\textsuperscript{\citeproc{ref-morrisUsingSimulationStudies2019}{3}},
+which structures simulation studies around five components: Aims,
+Data-generating mechanisms, Estimands, Methods, and Performance
+measures.
 
 \subsection{Aims}\label{aims}
 
@@ -410,7 +449,8 @@ For monotonicity testing, each replicate fits both a full model (with
 
 \subsection{Performance Measures}\label{performance-measures}
 
-Following \citet{morrisUsingSimulationStudies2019}, we report:
+Following\textsuperscript{\citeproc{ref-morrisUsingSimulationStudies2019}{3}},
+we report:
 
 \begin{itemize}
 \tightlist
@@ -438,7 +478,7 @@ Following \citet{morrisUsingSimulationStudies2019}, we report:
 \subsection{Convergence}\label{convergence}
 
 Across all 16,000 fits, the overall convergence rate was 100.0\%, with
-12.2\% of converged fits flagged as singular. Singular fits were
+12.3\% of converged fits flagged as singular. Singular fits were
 concentrated in scenarios with low ICC (0.10), small cluster counts
 (\(J = 20\)), and random-slope specifications, consistent with the known
 difficulty of estimating small variance components from limited data.
@@ -447,7 +487,7 @@ difficulty of estimating small variance components from limited data.
 
 \begin{figure}
 \centering
-\pandocbounded{\includegraphics[keepaspectratio,alt={Bias in marginal R-squared estimates across scenarios. Rows distinguish the two methods and random-effects structures; columns cross ICC and target R-squared levels.}]{report_files/figure-latex/fig-bias-heatmap-1.pdf}}
+\pandocbounded{\includegraphics[keepaspectratio,alt={Bias in marginal R-squared estimates across scenarios. Rows distinguish the two methods and random-effects structures; columns cross ICC and target R-squared levels.}]{report_files/report_files/figure-latex/fig-bias-heatmap-1.pdf}}
 \caption{Bias in marginal R-squared estimates across scenarios. Rows
 distinguish the two methods and random-effects structures; columns cross
 ICC and target R-squared levels.}
@@ -471,44 +511,44 @@ equivalence in this case.
 \toprule
 ID & J & n & ICC & R2m & RE & Bias (NS) & Bias (J) & MCSE (NS) & MCSE (J)\\
 \midrule
-1 & 20 & 5 & 0.1 & 0.1 & intercept & 0.016 & 0.016 & 0.003 & 0.003\\
-2 & 50 & 5 & 0.1 & 0.1 & intercept & 0.006 & 0.006 & 0.002 & 0.002\\
+1 & 20 & 5 & 0.1 & 0.1 & intercept & 0.009 & 0.009 & 0.002 & 0.002\\
+2 & 50 & 5 & 0.1 & 0.1 & intercept & 0.004 & 0.004 & 0.002 & 0.002\\
 3 & 20 & 20 & 0.1 & 0.1 & intercept & 0.002 & 0.002 & 0.001 & 0.001\\
-4 & 50 & 20 & 0.1 & 0.1 & intercept & 0.002 & 0.002 & 0.001 & 0.001\\
-5 & 20 & 5 & 0.4 & 0.1 & intercept & 0.013 & 0.013 & 0.002 & 0.002\\
+4 & 50 & 20 & 0.1 & 0.1 & intercept & 0.001 & 0.001 & 0.001 & 0.001\\
+5 & 20 & 5 & 0.4 & 0.1 & intercept & 0.010 & 0.010 & 0.002 & 0.002\\
 \addlinespace
-6 & 50 & 5 & 0.4 & 0.1 & intercept & 0.006 & 0.006 & 0.001 & 0.001\\
-7 & 20 & 20 & 0.4 & 0.1 & intercept & 0.005 & 0.005 & 0.001 & 0.001\\
-8 & 50 & 20 & 0.4 & 0.1 & intercept & 0.000 & 0.000 & 0.001 & 0.001\\
-9 & 20 & 5 & 0.1 & 0.4 & intercept & 0.002 & 0.002 & 0.003 & 0.003\\
-10 & 50 & 5 & 0.1 & 0.4 & intercept & 0.003 & 0.003 & 0.002 & 0.002\\
+6 & 50 & 5 & 0.4 & 0.1 & intercept & 0.004 & 0.004 & 0.002 & 0.002\\
+7 & 20 & 20 & 0.4 & 0.1 & intercept & 0.004 & 0.004 & 0.001 & 0.001\\
+8 & 50 & 20 & 0.4 & 0.1 & intercept & 0.001 & 0.001 & 0.001 & 0.001\\
+9 & 20 & 5 & 0.1 & 0.4 & intercept & 0.000 & 0.000 & 0.003 & 0.003\\
+10 & 50 & 5 & 0.1 & 0.4 & intercept & 0.004 & 0.004 & 0.002 & 0.002\\
 \addlinespace
-11 & 20 & 20 & 0.1 & 0.4 & intercept & 0.001 & 0.001 & 0.002 & 0.002\\
-12 & 50 & 20 & 0.1 & 0.4 & intercept & 0.000 & 0.000 & 0.001 & 0.001\\
-13 & 20 & 5 & 0.4 & 0.4 & intercept & 0.003 & 0.003 & 0.003 & 0.003\\
-14 & 50 & 5 & 0.4 & 0.4 & intercept & 0.005 & 0.005 & 0.002 & 0.002\\
+11 & 20 & 20 & 0.1 & 0.4 & intercept & -0.002 & -0.002 & 0.002 & 0.002\\
+12 & 50 & 20 & 0.1 & 0.4 & intercept & 0.001 & 0.001 & 0.001 & 0.001\\
+13 & 20 & 5 & 0.4 & 0.4 & intercept & 0.002 & 0.002 & 0.003 & 0.003\\
+14 & 50 & 5 & 0.4 & 0.4 & intercept & 0.000 & 0.000 & 0.002 & 0.002\\
 15 & 20 & 20 & 0.4 & 0.4 & intercept & 0.003 & 0.003 & 0.002 & 0.002\\
 \addlinespace
-16 & 50 & 20 & 0.4 & 0.4 & intercept & 0.001 & 0.001 & 0.001 & 0.001\\
-17 & 20 & 5 & 0.1 & 0.1 & slope & 0.014 & 0.014 & 0.003 & 0.003\\
-18 & 50 & 5 & 0.1 & 0.1 & slope & 0.009 & 0.009 & 0.002 & 0.002\\
-19 & 20 & 20 & 0.1 & 0.1 & slope & 0.005 & 0.005 & 0.001 & 0.001\\
-20 & 50 & 20 & 0.1 & 0.1 & slope & 0.003 & 0.003 & 0.001 & 0.001\\
+16 & 50 & 20 & 0.4 & 0.4 & intercept & 0.000 & 0.000 & 0.001 & 0.001\\
+17 & 20 & 5 & 0.1 & 0.1 & slope & 0.012 & 0.012 & 0.003 & 0.003\\
+18 & 50 & 5 & 0.1 & 0.1 & slope & 0.006 & 0.006 & 0.002 & 0.002\\
+19 & 20 & 20 & 0.1 & 0.1 & slope & 0.002 & 0.002 & 0.001 & 0.001\\
+20 & 50 & 20 & 0.1 & 0.1 & slope & 0.002 & 0.002 & 0.001 & 0.001\\
 \addlinespace
-21 & 20 & 5 & 0.4 & 0.1 & slope & 0.014 & 0.014 & 0.002 & 0.002\\
-22 & 50 & 5 & 0.4 & 0.1 & slope & 0.005 & 0.005 & 0.002 & 0.002\\
-23 & 20 & 20 & 0.4 & 0.1 & slope & 0.004 & 0.004 & 0.002 & 0.002\\
-24 & 50 & 20 & 0.4 & 0.1 & slope & 0.001 & 0.001 & 0.001 & 0.001\\
+21 & 20 & 5 & 0.4 & 0.1 & slope & 0.009 & 0.009 & 0.002 & 0.002\\
+22 & 50 & 5 & 0.4 & 0.1 & slope & 0.007 & 0.007 & 0.002 & 0.002\\
+23 & 20 & 20 & 0.4 & 0.1 & slope & 0.007 & 0.007 & 0.002 & 0.002\\
+24 & 50 & 20 & 0.4 & 0.1 & slope & 0.004 & 0.004 & 0.001 & 0.001\\
 25 & 20 & 5 & 0.1 & 0.4 & slope & 0.002 & 0.002 & 0.004 & 0.004\\
 \addlinespace
-26 & 50 & 5 & 0.1 & 0.4 & slope & 0.005 & 0.005 & 0.002 & 0.002\\
-27 & 20 & 20 & 0.1 & 0.4 & slope & 0.003 & 0.003 & 0.002 & 0.002\\
-28 & 50 & 20 & 0.1 & 0.4 & slope & 0.002 & 0.002 & 0.001 & 0.001\\
+26 & 50 & 5 & 0.1 & 0.4 & slope & 0.003 & 0.003 & 0.002 & 0.002\\
+27 & 20 & 20 & 0.1 & 0.4 & slope & 0.001 & 0.001 & 0.002 & 0.002\\
+28 & 50 & 20 & 0.1 & 0.4 & slope & 0.000 & 0.000 & 0.001 & 0.001\\
 29 & 20 & 5 & 0.4 & 0.4 & slope & 0.007 & 0.007 & 0.004 & 0.004\\
-30 & 50 & 5 & 0.4 & 0.4 & slope & 0.002 & 0.002 & 0.002 & 0.002\\
+30 & 50 & 5 & 0.4 & 0.4 & slope & 0.003 & 0.003 & 0.002 & 0.002\\
 \addlinespace
-31 & 20 & 20 & 0.4 & 0.4 & slope & -0.001 & -0.001 & 0.002 & 0.002\\
-32 & 50 & 20 & 0.4 & 0.4 & slope & 0.000 & 0.000 & 0.002 & 0.002\\
+31 & 20 & 20 & 0.4 & 0.4 & slope & 0.005 & 0.005 & 0.002 & 0.002\\
+32 & 50 & 20 & 0.4 & 0.4 & slope & 0.002 & 0.002 & 0.002 & 0.002\\
 \bottomrule
 \end{tabular}}
 \end{table}
@@ -518,7 +558,7 @@ Estimates}\label{distributions-of-estimates}
 
 \begin{figure}
 \centering
-\pandocbounded{\includegraphics[keepaspectratio,alt={Sampling distributions of marginal R-squared for selected scenarios. Dashed vertical line indicates the true value.}]{report_files/figure-latex/fig-distributions-1.pdf}}
+\pandocbounded{\includegraphics[keepaspectratio,alt={Sampling distributions of marginal R-squared for selected scenarios. Dashed vertical line indicates the true value.}]{report_files/report_files/figure-latex/fig-distributions-1.pdf}}
 \caption{Sampling distributions of marginal R-squared for selected
 scenarios. Dashed vertical line indicates the true value.}
 \end{figure}
@@ -535,7 +575,7 @@ greater estimation uncertainty.
 
 \begin{figure}
 \centering
-\pandocbounded{\includegraphics[keepaspectratio,alt={Monotonicity rates: proportion of replicates where R-squared of the full model exceeded that of the reduced model. Error bars are 95\% confidence intervals based on Monte Carlo standard errors.}]{report_files/figure-latex/fig-monotonicity-1.pdf}}
+\pandocbounded{\includegraphics[keepaspectratio,alt={Monotonicity rates: proportion of replicates where R-squared of the full model exceeded that of the reduced model. Error bars are 95\% confidence intervals based on Monte Carlo standard errors.}]{report_files/report_files/figure-latex/fig-monotonicity-1.pdf}}
 \caption{Monotonicity rates: proportion of replicates where R-squared of
 the full model exceeded that of the reduced model. Error bars are 95\%
 confidence intervals based on Monte Carlo standard errors.}
@@ -554,7 +594,7 @@ Interaction}\label{mse-and-sample-size-icc-interaction}
 
 \begin{figure}
 \centering
-\pandocbounded{\includegraphics[keepaspectratio,alt={MSE of Nakagawa-Schielzeth marginal R-squared as a function of total sample size, stratified by ICC and random-effects structure.}]{report_files/figure-latex/fig-mse-interaction-1.pdf}}
+\pandocbounded{\includegraphics[keepaspectratio,alt={MSE of Nakagawa-Schielzeth marginal R-squared as a function of total sample size, stratified by ICC and random-effects structure.}]{report_files/report_files/figure-latex/fig-mse-interaction-1.pdf}}
 \caption{MSE of Nakagawa-Schielzeth marginal R-squared as a function of
 total sample size, stratified by ICC and random-effects structure.}
 \end{figure}
@@ -576,43 +616,43 @@ large and well-separated from the residual.
 \toprule
 ID & J & n & ICC & R2m & RE & MSE m (NS) & MSE m (J) & MSE c (NS) & MSE c (J)\\
 \midrule
-1 & 20 & 5 & 0.1 & 0.1 & intercept & 0.004 & 0.004 & 0.009 & 0.009\\
+1 & 20 & 5 & 0.1 & 0.1 & intercept & 0.003 & 0.003 & 0.007 & 0.007\\
 2 & 50 & 5 & 0.1 & 0.1 & intercept & 0.001 & 0.001 & 0.003 & 0.003\\
 3 & 20 & 20 & 0.1 & 0.1 & intercept & 0.001 & 0.001 & 0.002 & 0.002\\
 4 & 50 & 20 & 0.1 & 0.1 & intercept & 0.000 & 0.000 & 0.001 & 0.001\\
-5 & 20 & 5 & 0.4 & 0.1 & intercept & 0.003 & 0.003 & 0.010 & 0.010\\
+5 & 20 & 5 & 0.4 & 0.1 & intercept & 0.002 & 0.002 & 0.010 & 0.010\\
 \addlinespace
 6 & 50 & 5 & 0.4 & 0.1 & intercept & 0.001 & 0.001 & 0.004 & 0.004\\
 7 & 20 & 20 & 0.4 & 0.1 & intercept & 0.001 & 0.001 & 0.005 & 0.005\\
 8 & 50 & 20 & 0.4 & 0.1 & intercept & 0.000 & 0.000 & 0.002 & 0.002\\
-9 & 20 & 5 & 0.1 & 0.4 & intercept & 0.006 & 0.006 & 0.006 & 0.006\\
+9 & 20 & 5 & 0.1 & 0.4 & intercept & 0.005 & 0.005 & 0.006 & 0.006\\
 10 & 50 & 5 & 0.1 & 0.4 & intercept & 0.002 & 0.002 & 0.003 & 0.003\\
 \addlinespace
-11 & 20 & 20 & 0.1 & 0.4 & intercept & 0.001 & 0.001 & 0.001 & 0.001\\
+11 & 20 & 20 & 0.1 & 0.4 & intercept & 0.001 & 0.001 & 0.002 & 0.002\\
 12 & 50 & 20 & 0.1 & 0.4 & intercept & 0.001 & 0.001 & 0.001 & 0.001\\
 13 & 20 & 5 & 0.4 & 0.4 & intercept & 0.005 & 0.005 & 0.004 & 0.004\\
-14 & 50 & 5 & 0.4 & 0.4 & intercept & 0.002 & 0.002 & 0.001 & 0.001\\
+14 & 50 & 5 & 0.4 & 0.4 & intercept & 0.002 & 0.002 & 0.002 & 0.002\\
 15 & 20 & 20 & 0.4 & 0.4 & intercept & 0.002 & 0.002 & 0.001 & 0.001\\
 \addlinespace
 16 & 50 & 20 & 0.4 & 0.4 & intercept & 0.001 & 0.001 & 0.001 & 0.001\\
-17 & 20 & 5 & 0.1 & 0.1 & slope & 0.004 & 0.004 & 0.011 & 0.011\\
-18 & 50 & 5 & 0.1 & 0.1 & slope & 0.001 & 0.001 & 0.005 & 0.005\\
+17 & 20 & 5 & 0.1 & 0.1 & slope & 0.004 & 0.004 & 0.012 & 0.012\\
+18 & 50 & 5 & 0.1 & 0.1 & slope & 0.001 & 0.001 & 0.004 & 0.004\\
 19 & 20 & 20 & 0.1 & 0.1 & slope & 0.001 & 0.001 & 0.002 & 0.002\\
 20 & 50 & 20 & 0.1 & 0.1 & slope & 0.000 & 0.000 & 0.001 & 0.001\\
 \addlinespace
 21 & 20 & 5 & 0.4 & 0.1 & slope & 0.003 & 0.003 & 0.010 & 0.010\\
 22 & 50 & 5 & 0.4 & 0.1 & slope & 0.001 & 0.001 & 0.004 & 0.004\\
-23 & 20 & 20 & 0.4 & 0.1 & slope & 0.001 & 0.001 & 0.005 & 0.005\\
-24 & 50 & 20 & 0.4 & 0.1 & slope & 0.000 & 0.000 & 0.002 & 0.002\\
-25 & 20 & 5 & 0.1 & 0.4 & slope & 0.006 & 0.006 & 0.008 & 0.008\\
+23 & 20 & 20 & 0.4 & 0.1 & slope & 0.001 & 0.001 & 0.004 & 0.004\\
+24 & 50 & 20 & 0.4 & 0.1 & slope & 0.001 & 0.001 & 0.002 & 0.002\\
+25 & 20 & 5 & 0.1 & 0.4 & slope & 0.006 & 0.006 & 0.007 & 0.007\\
 \addlinespace
 26 & 50 & 5 & 0.1 & 0.4 & slope & 0.002 & 0.002 & 0.003 & 0.003\\
 27 & 20 & 20 & 0.1 & 0.4 & slope & 0.002 & 0.002 & 0.002 & 0.002\\
 28 & 50 & 20 & 0.1 & 0.4 & slope & 0.001 & 0.001 & 0.001 & 0.001\\
-29 & 20 & 5 & 0.4 & 0.4 & slope & 0.007 & 0.007 & 0.004 & 0.004\\
+29 & 20 & 5 & 0.4 & 0.4 & slope & 0.006 & 0.006 & 0.005 & 0.005\\
 30 & 50 & 5 & 0.4 & 0.4 & slope & 0.002 & 0.002 & 0.002 & 0.002\\
 \addlinespace
-31 & 20 & 20 & 0.4 & 0.4 & slope & 0.002 & 0.002 & 0.001 & 0.001\\
+31 & 20 & 20 & 0.4 & 0.4 & slope & 0.002 & 0.002 & 0.002 & 0.002\\
 32 & 50 & 20 & 0.4 & 0.4 & slope & 0.001 & 0.001 & 0.001 & 0.001\\
 \bottomrule
 \end{tabular}}
@@ -630,43 +670,43 @@ ID & J & n & ICC & R2m & RE & MSE m (NS) & MSE m (J) & MSE c (NS) & MSE c (J)\\
 \toprule
 ID & J & n & ICC & R2m & RE & True R2c & Bias (NS) & Bias (J) & MCSE (NS) & MCSE (J)\\
 \midrule
-1 & 20 & 5 & 0.1 & 0.1 & intercept & 0.190 & 0.016 & 0.016 & 0.004 & 0.004\\
-2 & 50 & 5 & 0.1 & 0.1 & intercept & 0.190 & 0.006 & 0.006 & 0.002 & 0.002\\
-3 & 20 & 20 & 0.1 & 0.1 & intercept & 0.190 & 0.001 & 0.001 & 0.002 & 0.002\\
+1 & 20 & 5 & 0.1 & 0.1 & intercept & 0.190 & 0.005 & 0.005 & 0.004 & 0.004\\
+2 & 50 & 5 & 0.1 & 0.1 & intercept & 0.190 & 0.005 & 0.005 & 0.002 & 0.002\\
+3 & 20 & 20 & 0.1 & 0.1 & intercept & 0.190 & 0.003 & 0.003 & 0.002 & 0.002\\
 4 & 50 & 20 & 0.1 & 0.1 & intercept & 0.190 & 0.002 & 0.002 & 0.001 & 0.001\\
-5 & 20 & 5 & 0.4 & 0.1 & intercept & 0.460 & -0.011 & -0.011 & 0.004 & 0.004\\
+5 & 20 & 5 & 0.4 & 0.1 & intercept & 0.460 & -0.001 & -0.001 & 0.004 & 0.004\\
 \addlinespace
-6 & 50 & 5 & 0.4 & 0.1 & intercept & 0.460 & -0.005 & -0.005 & 0.003 & 0.003\\
-7 & 20 & 20 & 0.4 & 0.1 & intercept & 0.460 & -0.011 & -0.011 & 0.003 & 0.003\\
-8 & 50 & 20 & 0.4 & 0.1 & intercept & 0.460 & 0.001 & 0.001 & 0.002 & 0.002\\
-9 & 20 & 5 & 0.1 & 0.4 & intercept & 0.460 & 0.004 & 0.004 & 0.004 & 0.004\\
-10 & 50 & 5 & 0.1 & 0.4 & intercept & 0.460 & 0.003 & 0.003 & 0.002 & 0.002\\
+6 & 50 & 5 & 0.4 & 0.1 & intercept & 0.460 & -0.002 & -0.002 & 0.003 & 0.003\\
+7 & 20 & 20 & 0.4 & 0.1 & intercept & 0.460 & -0.006 & -0.006 & 0.003 & 0.003\\
+8 & 50 & 20 & 0.4 & 0.1 & intercept & 0.460 & -0.001 & -0.001 & 0.002 & 0.002\\
+9 & 20 & 5 & 0.1 & 0.4 & intercept & 0.460 & 0.000 & 0.000 & 0.004 & 0.004\\
+10 & 50 & 5 & 0.1 & 0.4 & intercept & 0.460 & 0.005 & 0.005 & 0.002 & 0.002\\
 \addlinespace
 11 & 20 & 20 & 0.1 & 0.4 & intercept & 0.460 & 0.001 & 0.001 & 0.002 & 0.002\\
-12 & 50 & 20 & 0.1 & 0.4 & intercept & 0.460 & 0.001 & 0.001 & 0.001 & 0.001\\
-13 & 20 & 5 & 0.4 & 0.4 & intercept & 0.640 & -0.006 & -0.006 & 0.003 & 0.003\\
-14 & 50 & 5 & 0.4 & 0.4 & intercept & 0.640 & 0.002 & 0.002 & 0.002 & 0.002\\
+12 & 50 & 20 & 0.1 & 0.4 & intercept & 0.460 & 0.000 & 0.000 & 0.001 & 0.001\\
+13 & 20 & 5 & 0.4 & 0.4 & intercept & 0.640 & -0.003 & -0.003 & 0.003 & 0.003\\
+14 & 50 & 5 & 0.4 & 0.4 & intercept & 0.640 & -0.005 & -0.005 & 0.002 & 0.002\\
 15 & 20 & 20 & 0.4 & 0.4 & intercept & 0.640 & -0.004 & -0.004 & 0.002 & 0.002\\
 \addlinespace
-16 & 50 & 20 & 0.4 & 0.4 & intercept & 0.640 & 0.001 & 0.001 & 0.001 & 0.001\\
-17 & 20 & 5 & 0.1 & 0.1 & slope & 0.210 & 0.039 & 0.039 & 0.004 & 0.004\\
-18 & 50 & 5 & 0.1 & 0.1 & slope & 0.210 & 0.019 & 0.019 & 0.003 & 0.003\\
-19 & 20 & 20 & 0.1 & 0.1 & slope & 0.210 & 0.003 & 0.003 & 0.002 & 0.002\\
-20 & 50 & 20 & 0.1 & 0.1 & slope & 0.210 & 0.003 & 0.003 & 0.001 & 0.001\\
+16 & 50 & 20 & 0.4 & 0.4 & intercept & 0.640 & 0.000 & 0.000 & 0.001 & 0.001\\
+17 & 20 & 5 & 0.1 & 0.1 & slope & 0.210 & 0.037 & 0.037 & 0.005 & 0.005\\
+18 & 50 & 5 & 0.1 & 0.1 & slope & 0.210 & 0.011 & 0.011 & 0.003 & 0.003\\
+19 & 20 & 20 & 0.1 & 0.1 & slope & 0.210 & -0.001 & -0.001 & 0.002 & 0.002\\
+20 & 50 & 20 & 0.1 & 0.1 & slope & 0.210 & 0.000 & 0.000 & 0.001 & 0.001\\
 \addlinespace
-21 & 20 & 5 & 0.4 & 0.1 & slope & 0.509 & -0.004 & -0.004 & 0.004 & 0.004\\
-22 & 50 & 5 & 0.4 & 0.1 & slope & 0.509 & -0.003 & -0.003 & 0.003 & 0.003\\
-23 & 20 & 20 & 0.4 & 0.1 & slope & 0.509 & -0.006 & -0.006 & 0.003 & 0.003\\
+21 & 20 & 5 & 0.4 & 0.1 & slope & 0.509 & -0.002 & -0.002 & 0.004 & 0.004\\
+22 & 50 & 5 & 0.4 & 0.1 & slope & 0.509 & 0.003 & 0.003 & 0.003 & 0.003\\
+23 & 20 & 20 & 0.4 & 0.1 & slope & 0.509 & 0.003 & 0.003 & 0.003 & 0.003\\
 24 & 50 & 20 & 0.4 & 0.1 & slope & 0.509 & 0.000 & 0.000 & 0.002 & 0.002\\
-25 & 20 & 5 & 0.1 & 0.4 & slope & 0.473 & 0.016 & 0.016 & 0.004 & 0.004\\
+25 & 20 & 5 & 0.1 & 0.4 & slope & 0.473 & 0.018 & 0.018 & 0.004 & 0.004\\
 \addlinespace
-26 & 50 & 5 & 0.1 & 0.4 & slope & 0.473 & 0.008 & 0.008 & 0.002 & 0.002\\
-27 & 20 & 20 & 0.1 & 0.4 & slope & 0.473 & 0.000 & 0.000 & 0.002 & 0.002\\
-28 & 50 & 20 & 0.1 & 0.4 & slope & 0.473 & 0.001 & 0.001 & 0.001 & 0.001\\
-29 & 20 & 5 & 0.4 & 0.4 & slope & 0.673 & 0.002 & 0.002 & 0.003 & 0.003\\
-30 & 50 & 5 & 0.4 & 0.4 & slope & 0.673 & 0.001 & 0.001 & 0.002 & 0.002\\
+26 & 50 & 5 & 0.1 & 0.4 & slope & 0.473 & 0.009 & 0.009 & 0.002 & 0.002\\
+27 & 20 & 20 & 0.1 & 0.4 & slope & 0.473 & -0.002 & -0.002 & 0.002 & 0.002\\
+28 & 50 & 20 & 0.1 & 0.4 & slope & 0.473 & -0.003 & -0.003 & 0.001 & 0.001\\
+29 & 20 & 5 & 0.4 & 0.4 & slope & 0.673 & 0.005 & 0.005 & 0.003 & 0.003\\
+30 & 50 & 5 & 0.4 & 0.4 & slope & 0.673 & -0.003 & -0.003 & 0.002 & 0.002\\
 \addlinespace
-31 & 20 & 20 & 0.4 & 0.4 & slope & 0.673 & -0.002 & -0.002 & 0.002 & 0.002\\
+31 & 20 & 20 & 0.4 & 0.4 & slope & 0.673 & -0.004 & -0.004 & 0.002 & 0.002\\
 32 & 50 & 20 & 0.4 & 0.4 & slope & 0.673 & -0.001 & -0.001 & 0.001 & 0.001\\
 \bottomrule
 \end{tabular}}
@@ -705,7 +745,8 @@ marginal \(R^2\) was estimated most precisely in high-ICC, large-sample
 conditions, where the variance decomposition is most identifiable.
 Third, singular fits were common in low-ICC random-slope scenarios, a
 well-known limitation of maximum likelihood estimation for small
-variance components \citep{batesLme4LinearMixed2015}.
+variance
+components\textsuperscript{\citeproc{ref-batesLme4LinearMixed2015}{11}}.
 
 \subsection{Limitations and Future
 Directions}\label{limitations-and-future-directions}
@@ -769,7 +810,120 @@ underscore the importance of adequate sample sizes for reliable \(R^2\)
 estimation in multilevel designs and support the routine reporting of
 both marginal and conditional \(R^2\) alongside convergence diagnostics.
 
-\renewcommand\refname{References}
-\bibliography{references.bib}
+\section{References}\label{references}
+
+\subsection{Morris et al.~(2019) ADEMP
+Compliance}\label{morris-et-al.-2019-ademp-compliance}
+
+This simulation study was audited against the reporting standards
+proposed by Morris, White, and
+Crowther\textsuperscript{\citeproc{ref-morris2019using}{12}}. The full
+audit is at \texttt{docs/morris-audit-2026-04-17.md}.
+
+\textbf{Verdict:} Mostly compliant.
+
+\textbf{Key gaps identified:}
+
+\begin{itemize}
+\tightlist
+\item
+  \texttt{n\_sim\ =\ 500} not documented with an explicit Monte Carlo SE
+  justification.
+\item
+  \texttt{RNGkind(\textquotesingle{}L\textbackslash{}\textquotesingle{}Ecuyer-CMRG\textquotesingle{})}
+  not pinned.
+\item
+  Post-run \texttt{.Random.seed} not captured per replicate; coverage is
+  not among the reported performance measures.
+\end{itemize}
+
+A remediation plan is documented in the audit file and will be executed
+in a subsequent revision.
+
+\protect\phantomsection\label{refs}
+\begin{CSLReferences}{0}{1}
+\bibitem[\citeproctext]{ref-nakagawaGeneralSimpleMethod2013}
+\CSLLeftMargin{1. }%
+\CSLRightInline{Nakagawa S, Schielzeth H. A general and simple method
+for obtaining {R2} from generalized linear mixed-effects models.
+\emph{Methods in Ecology and Evolution}. 2013;4(2):133-142.
+doi:\href{https://doi.org/10.1111/j.2041-210x.2012.00261.x}{10.1111/j.2041-210x.2012.00261.x}}
+
+\bibitem[\citeproctext]{ref-johnsonExtensionNakagawaSchielzeth2014}
+\CSLLeftMargin{2. }%
+\CSLRightInline{Johnson PCD. Extension of {Nakagawa} and {Schielzeth}'s
+{R2GLMM} to random slopes models. \emph{Methods in Ecology and
+Evolution}. 2014;5(9):944-946.
+doi:\href{https://doi.org/10.1111/2041-210X.12225}{10.1111/2041-210X.12225}}
+
+\bibitem[\citeproctext]{ref-morrisUsingSimulationStudies2019}
+\CSLLeftMargin{3. }%
+\CSLRightInline{Morris TP, White IR, Crowther MJ. Using simulation
+studies to evaluate statistical methods. \emph{Statistics in Medicine}.
+2019;38(11):2074-2102.
+doi:\href{https://doi.org/10.1002/sim.8086}{10.1002/sim.8086}}
+
+\bibitem[\citeproctext]{ref-bartonMuMIn2024}
+\CSLLeftMargin{4. }%
+\CSLRightInline{Barton K. \emph{{MuMIn}: Multi-Model Inference}.; 2024.
+\url{https://CRAN.R-project.org/package=MuMIn}}
+
+\bibitem[\citeproctext]{ref-ludeckePerformanceAssessment2021}
+\CSLLeftMargin{5. }%
+\CSLRightInline{Lüdecke D, Ben-Shachar MS, Patil I, Waggoner P, Makowski
+D. {performance}: An {R} package for assessment, comparison and testing
+of statistical models. \emph{Journal of Open Source Software}.
+2021;6(60):3139.
+doi:\href{https://doi.org/10.21105/joss.03139}{10.21105/joss.03139}}
+
+\bibitem[\citeproctext]{ref-nakagawaUpdatedArticleCoefficient2017}
+\CSLLeftMargin{6. }%
+\CSLRightInline{Nakagawa S, Johnson PCD, Schielzeth H. The coefficient
+of determination {R2} and intra-class correlation coefficient from
+generalized linear mixed-effects models revisited and expanded.
+\emph{Journal of the Royal Society Interface}. 2017;14(134):20170213.
+doi:\href{https://doi.org/10.1098/rsif.2017.0213}{10.1098/rsif.2017.0213}}
+
+\bibitem[\citeproctext]{ref-edwardsR2StatisticFixed2008}
+\CSLLeftMargin{7. }%
+\CSLRightInline{Edwards LJ, Muller KE, Wolfinger RD, Qaqish BF,
+Schabenberger O. An {R2} statistic for fixed effects in the linear mixed
+model. \emph{Statistics in Medicine}. 2008;27(29):6137-6157.
+doi:\href{https://doi.org/10.1002/sim.3429}{10.1002/sim.3429}}
+
+\bibitem[\citeproctext]{ref-jaegerR2glmmSemiPartialR22017}
+\CSLLeftMargin{8. }%
+\CSLRightInline{Jaeger BC, Edwards LJ, Das K, Sen PK. An {R2} statistic
+for fixed effects in the generalized linear mixed model. \emph{Journal
+of Applied Statistics}. 2017;44(6):1086-1105.
+doi:\href{https://doi.org/10.1080/02664763.2016.1193725}{10.1080/02664763.2016.1193725}}
+
+\bibitem[\citeproctext]{ref-xuMeasuringExplainedVariation2003}
+\CSLLeftMargin{9. }%
+\CSLRightInline{Xu R. Measuring explained variation in linear mixed
+effects models. \emph{Statistics in Medicine}. 2003;22(22):3527-3541.
+doi:\href{https://doi.org/10.1002/sim.1572}{10.1002/sim.1572}}
+
+\bibitem[\citeproctext]{ref-snijdersExplainedVariationMultilevel1994}
+\CSLLeftMargin{10. }%
+\CSLRightInline{Snijders TAB, Bosker RJ. Modeled variance in two-level
+models. \emph{Sociological Methods and Research}. 1994;22(3):342-363.
+doi:\href{https://doi.org/10.1177/0049124194022003004}{10.1177/0049124194022003004}}
+
+\bibitem[\citeproctext]{ref-batesLme4LinearMixed2015}
+\CSLLeftMargin{11. }%
+\CSLRightInline{Bates D, Mächler M, Bolker B, Walker S. Fitting linear
+mixed-effects models using {lme4}. \emph{Journal of Statistical
+Software}. 2015;67(1):1-48.
+doi:\href{https://doi.org/10.18637/jss.v067.i01}{10.18637/jss.v067.i01}}
+
+\bibitem[\citeproctext]{ref-morris2019using}
+\CSLLeftMargin{12. }%
+\CSLRightInline{Morris TP, White IR, Crowther MJ. Using simulation
+studies to evaluate statistical methods. \emph{Statistics in Medicine}.
+2019;38(11):2074-2102.
+doi:\href{https://doi.org/10.1002/sim.8086}{10.1002/sim.8086}}
+
+\end{CSLReferences}
 
 \end{document}

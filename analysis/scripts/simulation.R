@@ -8,6 +8,12 @@
 
 library(mixedr2)
 
+# Morris, White, and Crowther (2019) §4.1: pin RNGkind explicitly at
+# program entry. Per-replicate seeds are pre-drawn from a master seed
+# inside `create_scenario_grid()` (`R/generate_data.R`), giving
+# reproducible, paired comparisons across methods within a rep.
+RNGkind("L'Ecuyer-CMRG")
+
 args <- commandArgs(trailingOnly = TRUE)
 pilot <- "--pilot" %in% args
 
@@ -15,6 +21,10 @@ if (pilot) {
   n_sim <- 10
   message("=== PILOT RUN (10 reps) ===")
 } else {
+  # n_sim justification (Morris §5.3): for bias MCSE <= 0.002 at
+  # empirical SE ~ 0.04, n_sim >= 400. n_sim = 500 gives bias MCSE
+  # approximately 0.0018, comfortably within target. For coverage
+  # MCSE <= 1 pp at 0.95, n_sim >= 475.
   n_sim <- 500
   message("=== FULL RUN (500 reps) ===")
 }
