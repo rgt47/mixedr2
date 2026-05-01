@@ -1,0 +1,694 @@
+---
+title: 'Comparing R-Squared Measures for Linear Mixed Models:
+  A Monte Carlo Simulation Study'
+author: 'R.G. Thomas'
+date: '`r format(Sys.Date(), "%B %d, %Y")`'
+fontsize: 11pt
+geometry: 'left=3cm,right=5cm,top=2cm,bottom=2cm'
+output:
+  pdf_document:
+    latex_engine: xelatex
+    toc: true
+    number_sections: true
+    highlight: tango
+    keep_tex: true
+bibliography: references.bib
+csl: statistics-in-medicine.csl
+link-citations: true
+---
+
+```{r setup, include=FALSE}
+library(mixedr2)
+library(dplyr)
+library(tidyr)
+library(ggplot2)
+library(knitr)
+library(kableExtra)
+
+opts_chunk$set(
+  warning = FALSE, message = FALSE, echo = FALSE,
+  fig.width = 6.5, fig.height = 4.5,
+  results = 'asis', dev = 'pdf',
+  cache.path = 'cache/'
+)
+options(
+  knitr.kable.NA = '',
+  dplyr.summarise.inform = FALSE,
+  scipen = 1, digits = 3
+)
+```
+
+```{r load-data}
+results <- readRDS('../data/derived_data/sim_results.rds')
+summary_table <- summarize_all_scenarios(results)
+```
+
+# Introduction
+
+Quantifying the proportion of variance explained by a statistical
+model is a fundamental component of scientific inference. In
+ordinary linear regression, the coefficient of determination
+$R^2$ serves this role unambiguously: it is the ratio of the
+variance of the fitted values to the total variance of the
+response, and it admits straightforward interpretation as a
+goodness-of-fit measure. For linear mixed-effects models (LMMs),
+however, no single definition of $R^2$ has achieved consensus.
+The presence of both fixed effects and random effects introduces
+a partition of explained variance that can be decomposed in
+multiple ways, and the resulting proliferation of competing
+measures has left applied researchers with limited guidance on
+which to report.
+
+This ambiguity has practical consequences. Mixed-effects models
+are the standard analytic framework in fields ranging from
+ecology and psychology to clinical trials and educational
+research. Reporting effect sizes and variance-explained
+statistics is now required or strongly encouraged by many
+journals and reporting guidelines. Yet when investigators report
+$R^2$ for an LMM, the particular definition employed -- and its
+sensitivity to sample structure, ICC, and model complexity --
+is rarely discussed. Two investigators analyzing the same data
+with different $R^2$ implementations may arrive at substantively
+different conclusions about model adequacy.
+
+Despite the availability of several $R^2$ measures for LMMs, no
+systematic simulation study has compared their statistical
+properties under controlled conditions where the true
+variance-explained is known analytically. The present study
+addresses this gap. We compare the two most widely used
+approaches -- @nakagawaGeneralSimpleMethod2013 and
+@johnsonExtensionNakagawaSchielzeth2014 -- via Monte Carlo
+simulation following the ADEMP framework
+[@morrisUsingSimulationStudies2019]. Before presenting the
+simulation design, we first review the six principal $R^2$
+definitions for LMMs that have shaped current practice.
+
+## R-Squared Measures for Linear Mixed Models
+
+The challenge of defining $R^2$ for mixed models arises from a
+core ambiguity: what counts as 'explained' variance? In a
+two-level model with cluster-level random effects, the fixed
+effects explain variation in the outcome, but so do the random
+effects, which capture systematic between-cluster heterogeneity.
+Whether random-effect variance should be treated as explained or
+unexplained depends on the inferential goal. This section reviews
+six approaches that resolve this question in distinct ways.
+
+### Nakagawa and Schielzeth (2013)
+
+@nakagawaGeneralSimpleMethod2013 proposed what has become the
+most widely adopted framework, distinguishing two quantities.
+The *marginal* $R^2$ ($R^2_m$) captures the proportion of
+variance explained by fixed effects alone:
+
+$$R^2_m = \frac{\sigma^2_f}{\sigma^2_f + \sigma^2_\alpha + \sigma^2_\varepsilon}$$
+
+where $\sigma^2_f$ is the variance of the linear predictor
+(fixed-effect component), $\sigma^2_\alpha$ is the random-effect
+variance, and $\sigma^2_\varepsilon$ is the residual variance.
+The *conditional* $R^2$ ($R^2_c$) additionally credits the
+random effects as explained variance:
+
+$$R^2_c = \frac{\sigma^2_f + \sigma^2_\alpha}{\sigma^2_f + \sigma^2_\alpha + \sigma^2_\varepsilon}$$
+
+This approach is implemented in `MuMIn::r.squaredGLMM()`
+[@bartonMuMIn2024] and `performance::r2_nakagawa()`
+[@ludeckePerformanceAssessment2021]. Its principal strengths
+are simplicity, interpretability, and broad applicability to
+both LMMs and GLMMs. The marginal/conditional distinction maps
+naturally onto research questions about population-average versus
+cluster-specific prediction. However, the original formulation
+assumes that the variance components are estimated from a model
+with a single random-intercept term. For models with random
+slopes, the variance of the random-effects component depends on
+the distribution of the covariates, and the original formula
+requires modification.
+
+### Johnson (2014)
+
+@johnsonExtensionNakagawaSchielzeth2014 extended the
+Nakagawa-Schielzeth framework to random-slope models by
+deriving the expected variance of the random-effects
+contribution conditional on the observed design matrix. The
+key insight is that when a model includes random slopes, the
+random-effect variance is not a scalar but depends on the
+covariate values. Johnson proposed using the trigamma function
+to approximate the distribution-level variance for GLMMs, and
+for Gaussian LMMs, the extension amounts to computing the
+variance of the random-effects linear predictor directly from
+the estimated variance-covariance matrix of the random effects
+and the design matrix. This method is accessed via
+`MuMIn::r.squaredGLMM(method = "trigamma")`.
+
+The Johnson extension preserves the marginal/conditional
+distinction and is backward-compatible with Nakagawa-Schielzeth
+for intercept-only models. Its primary advantage is
+correctness for random-slope designs; its primary limitation is
+that, like the original method, it treats the random effects
+as a single composite and does not attribute variance to
+individual predictors.
+@nakagawaUpdatedArticleCoefficient2017 subsequently unified
+these approaches in an updated treatment.
+
+### Edwards et al. (2008)
+
+@edwardsR2StatisticFixed2008 proposed a likelihood-ratio-based
+$R^2$ specifically for the fixed-effects portion of an LMM.
+Their statistic is defined as:
+
+$$R^2_{LR} = 1 - \frac{L(\hat{\beta} = 0)}{L(\hat{\beta})}$$
+
+expressed in terms of the ratio of the likelihood of a
+reduced model (intercept and random effects only) to the full
+model. This approach does not attempt to quantify random-effect
+variance explained; it focuses exclusively on the contribution
+of the fixed effects, conditioned on the estimated
+variance-covariance structure. It is implemented in
+`r2glmm::r2beta(method = "lr")`.
+
+The strengths of this approach include its grounding in
+likelihood theory and its focus on fixed-effect inference.
+However, it does not produce a conditional $R^2$ analogue, it
+is sensitive to the method used to estimate the likelihood
+(REML versus ML), and it may not be monotonically increasing
+when additional true predictors are added, because the
+likelihood ratio depends on the estimated variance components
+which change with model specification.
+
+### Jaeger et al. (2017)
+
+@jaegerR2glmmSemiPartialR22017 extended the Edwards et al.
+framework by introducing *semi-partial* $R^2$ statistics that
+decompose the fixed-effect $R^2$ into contributions from
+individual predictors or sets of predictors. Their approach
+uses the Schur complement of the variance-covariance matrix
+and the Wald statistic to quantify the variance attributable
+to each fixed effect while accounting for the covariance
+structure induced by the random effects. This is implemented in
+`r2glmm::r2beta(method = "sgv")`.
+
+Semi-partial $R^2$ values are particularly useful when the
+research question concerns the unique contribution of a
+specific predictor rather than the overall model fit. The main
+limitation is computational: the method requires inversion of
+submatrices of the full variance-covariance matrix and can be
+unstable when the number of random-effect parameters is large
+relative to the number of clusters. Like Edwards et al., it
+addresses only fixed-effect variance and does not produce a
+conditional $R^2$.
+
+### Xu (2003)
+
+@xuMeasuringExplainedVariation2003 proposed level-specific
+$R^2$ measures that separately quantify the variance explained
+at each level of the multilevel hierarchy. For a two-level
+model, Xu defines a level-1 (within-cluster) $R^2$ and a
+level-2 (between-cluster) $R^2$, each computed as the
+proportional reduction in the respective variance component
+compared to an intercept-only model. This approach shares
+conceptual ground with the earlier proposal of
+@snijdersExplainedVariationMultilevel1994.
+
+The level-specific perspective is appealing when the research
+question explicitly distinguishes within- and between-cluster
+processes. Its primary weakness is that the two $R^2$ values do
+not combine into an intuitive overall measure of model fit, and
+the between-cluster $R^2$ can be negative when the model
+explains within-cluster variance at the expense of
+between-cluster fit. Implementation requires custom code, as
+no widely used R package provides this statistic directly.
+
+### The `performance` Package Implementation
+
+The `performance` package [@ludeckePerformanceAssessment2021]
+provides `r2_nakagawa()`, which implements the
+Nakagawa-Schielzeth framework with the Johnson extension for
+random slopes. Although the statistical method is nominally
+identical to `MuMIn::r.squaredGLMM()`, implementation details
+differ. The `performance` package computes the
+fixed-effect variance from the model matrix directly, whereas
+`MuMIn` uses the variance of the fitted values. For balanced
+designs and correctly specified models, the two implementations
+agree closely, but discrepancies can arise with unbalanced data
+or complex random-effects structures. Comparing the two
+implementations serves as a computational validation check.
+
+## Summary of Methods
+
+Table \ref{tab:methods-summary} summarizes the six approaches.
+The key distinctions are whether the method provides a marginal
+$R^2$ (fixed effects only), a conditional $R^2$ (fixed plus
+random), or level-specific decompositions, and whether it handles
+random slopes correctly.
+
+```{r methods-summary-table}
+methods_df <- data.frame(
+  Method = c(
+    'Nakagawa-Schielzeth (2013)',
+    'Johnson (2014)',
+    'Edwards et al. (2008)',
+    'Jaeger et al. (2017)',
+    'Xu (2003)',
+    'performance package'
+  ),
+  Type = c(
+    'Marginal + conditional',
+    'Marginal + conditional',
+    'Fixed-effects (LR)',
+    'Semi-partial',
+    'Level-specific',
+    'Marginal + conditional'
+  ),
+  `Random slopes` = c(
+    'Approximate',
+    'Correct',
+    'N/A',
+    'N/A',
+    'Partial',
+    'Correct'
+  ),
+  Package = c(
+    'MuMIn',
+    'MuMIn',
+    'r2glmm',
+    'r2glmm',
+    'Custom',
+    'performance'
+  ),
+  check.names = FALSE
+)
+
+kable(
+  methods_df,
+  format = 'latex', booktabs = TRUE,
+  caption = 'Summary of R-squared methods for LMMs.',
+  label = 'methods-summary'
+) |>
+  kable_styling(
+    latex_options = c('hold_position'),
+    font_size = 10
+  )
+```
+
+The present study focuses on the Nakagawa-Schielzeth and Johnson
+methods, which are the most frequently reported in applied
+research and which jointly account for the vast majority of
+$R^2$ values published for LMMs. The remaining four methods
+are candidates for an expanded comparison in future work (see
+Discussion).
+
+# Simulation Design
+
+The simulation follows the ADEMP framework
+[@morrisUsingSimulationStudies2019], which structures
+simulation studies around five components: Aims, Data-generating
+mechanisms, Estimands, Methods, and Performance measures.
+
+## Aims
+
+The simulation addresses four questions:
+
+1. **Accuracy.** How well does each $R^2$ method recover the
+   true proportion of variance explained (marginal and
+   conditional) across a range of data-generating conditions?
+
+2. **Sensitivity.** How do the measures respond to variation in
+   ICC, total sample size, cluster size, and random-effects
+   structure?
+
+3. **Monotonicity.** When a true predictor is added to the
+   model, does $R^2$ always increase?
+
+4. **Robustness.** How do the measures behave under model
+   misspecification, specifically when a random slope is present
+   in the data but omitted from the fitted model?
+
+## Data-Generating Mechanisms
+
+Data are generated from the two-level linear mixed model:
+
+$$y_{ij} = \beta_0 + \beta_1 x_{1ij} + \beta_2 x_{2ij} + b_{0i} + b_{1i} x_{1ij} + \varepsilon_{ij}$$
+
+where $i = 1, \ldots, J$ indexes clusters, $j = 1, \ldots, n$
+indexes observations within clusters, $b_{0i} \sim N(0, \tau_0^2)$
+is the random intercept, $b_{1i} \sim N(0, \tau_1^2)$ is the
+random slope (set to zero in intercept-only scenarios),
+$\varepsilon_{ij} \sim N(0, \sigma^2)$, and all predictors
+$x_k \sim N(0, 1)$ independently.
+
+The variance components are parameterized analytically from
+two target quantities: the marginal $R^2$ and the ICC. Fixing
+$\sigma^2 = 1$, the random-intercept variance is
+$\tau_0^2 = \sigma^2 \cdot \text{ICC} / (1 - \text{ICC})$,
+and the fixed-effect coefficients are solved to achieve the
+target $R^2_m$. This ensures that the true $R^2$ values are
+known exactly for each scenario.
+
+The full factorial design crosses five factors:
+
+```{r dgp-table}
+dgp_df <- data.frame(
+  Factor = c(
+    'Clusters (J)',
+    'Cluster size (n)',
+    'ICC',
+    'Target marginal R-squared',
+    'Random effects'
+  ),
+  Levels = c(
+    '20, 50',
+    '5, 20',
+    '0.10, 0.40',
+    '0.10, 0.40',
+    'Intercept-only, Intercept + slope'
+  ),
+  Count = c(2, 2, 2, 2, 2)
+)
+
+kable(
+  dgp_df,
+  format = 'latex', booktabs = TRUE,
+  caption = 'Data-generating mechanism factors.',
+  label = 'dgp-factors'
+) |>
+  kable_styling(latex_options = 'hold_position')
+```
+
+This yields $2^5 = 32$ scenarios, each replicated 500 times,
+for a total of 16,000 model fits. Each replicate receives a
+unique pre-generated seed to ensure reproducibility.
+
+## Estimands
+
+The estimands are the *true* marginal and conditional $R^2$
+values, computed analytically from the known variance
+components of each scenario:
+
+$$R^2_m = \frac{\text{Var}(X\beta)}{\text{Var}(X\beta) + \text{Var}(\text{random}) + \sigma^2}$$
+
+$$R^2_c = \frac{\text{Var}(X\beta) + \text{Var}(\text{random})}{\text{Var}(X\beta) + \text{Var}(\text{random}) + \sigma^2}$$
+
+## Methods Under Comparison
+
+Two methods are evaluated:
+
+- **Nakagawa-Schielzeth (2013):** `MuMIn::r.squaredGLMM()`
+  with the default log-normal approximation.
+- **Johnson (2014):** `MuMIn::r.squaredGLMM(method = "trigamma")`.
+
+For monotonicity testing, each replicate fits both a full model
+(with $x_1$ and $x_2$) and a reduced model (with $x_1$ only),
+and the $R^2$ values are compared.
+
+## Performance Measures
+
+Following @morrisUsingSimulationStudies2019, we report:
+
+- **Bias:** $\bar{\hat{R}}^2 - R^2_{\text{true}}$
+- **Relative bias:** Bias / $R^2_{\text{true}}$
+- **Empirical variance:** Var($\hat{R}^2$)
+- **Mean squared error (MSE):** $E[(\hat{R}^2 - R^2_{\text{true}})^2]$
+- **Monotonicity rate:** Proportion of replicates where
+  $\hat{R}^2_{\text{full}} \geq \hat{R}^2_{\text{reduced}}$
+- **Boundary violation rate:** Proportion of estimates
+  outside [0, 1]
+- **Monte Carlo standard errors (MCSE):** For all of the above
+
+# Results
+
+```{r convergence-summary}
+conv_overall <- mean(results$converged)
+sing_overall <- mean(results$singular, na.rm = TRUE)
+```
+
+## Convergence
+
+Across all 16,000 fits, the overall convergence rate was
+`r sprintf('%.1f%%', conv_overall * 100)`, with
+`r sprintf('%.1f%%', sing_overall * 100)` of converged fits
+flagged as singular. Singular fits were concentrated in
+scenarios with low ICC (0.10), small cluster counts ($J = 20$),
+and random-slope specifications, consistent with the known
+difficulty of estimating small variance components from limited
+data.
+
+## Bias
+
+```{r fig-bias-heatmap, fig.cap='Bias in marginal R-squared estimates across scenarios. Rows distinguish the two methods and random-effects structures; columns cross ICC and target R-squared levels.', fig.width=8, fig.height=6}
+plot_bias_heatmap(summary_table)
+```
+
+Figure 1 presents the bias in marginal $R^2$ across all 32
+scenarios. Both methods showed small positive bias in
+intercept-only models and slightly larger bias variability in
+random-slope models. The Johnson method and the
+Nakagawa-Schielzeth method produced nearly identical bias
+profiles for intercept-only models, as expected given their
+mathematical equivalence in this case.
+
+```{r bias-table}
+bias_tbl <- summary_table |>
+  select(
+    scenario_id, n_clusters, cluster_size, icc,
+    target_r2m, re_structure,
+    nak_m_bias, joh_m_bias,
+    nak_m_mcse_bias, joh_m_mcse_bias
+  ) |>
+  mutate(across(where(is.numeric) & !scenario_id, ~round(., 4)))
+
+kable(
+  bias_tbl,
+  format = 'latex', booktabs = TRUE,
+  caption = 'Bias in marginal R-squared with Monte Carlo
+    standard errors.',
+  label = 'bias-marginal',
+  col.names = c(
+    'ID', 'J', 'n', 'ICC', 'R2m', 'RE',
+    'Bias (NS)', 'Bias (J)',
+    'MCSE (NS)', 'MCSE (J)'
+  )
+) |>
+  kable_styling(
+    latex_options = c('hold_position', 'scale_down'),
+    font_size = 8
+  )
+```
+
+## Distributions of Estimates
+
+```{r fig-distributions, fig.cap='Sampling distributions of marginal R-squared for selected scenarios. Dashed vertical line indicates the true value.', fig.width=8, fig.height=6}
+sample_ids <- c(1, 8, 17, 32)
+plot_r2_distributions(results, scenario_ids = sample_ids)
+```
+
+Figure 2 displays the sampling distributions of $\hat{R}^2_m$
+for four representative scenarios spanning the design space. In
+large-sample intercept-only scenarios (e.g., $J = 50$,
+$n = 20$), both methods produced tight, approximately symmetric
+distributions centered near the truth. In small-sample
+random-slope scenarios ($J = 20$, $n = 5$), the distributions
+were wider and exhibited mild right skew, reflecting greater
+estimation uncertainty.
+
+## Monotonicity
+
+```{r fig-monotonicity, fig.cap='Monotonicity rates: proportion of replicates where R-squared of the full model exceeded that of the reduced model. Error bars are 95\\% confidence intervals based on Monte Carlo standard errors.', fig.width=8, fig.height=5}
+plot_monotonicity_rates(summary_table)
+```
+
+Figure 3 presents monotonicity rates across scenarios. Both
+methods achieved near-perfect monotonicity ($> 0.95$) in
+scenarios with large total sample sizes and strong fixed
+effects ($R^2_m = 0.40$). Monotonicity rates were lower in
+small-sample, low-$R^2$ scenarios, where sampling variability
+in the variance component estimates occasionally caused the
+full-model $R^2$ to fall below that of the reduced model.
+
+## MSE and Sample Size-ICC Interaction
+
+```{r fig-mse-interaction, fig.cap='MSE of Nakagawa-Schielzeth marginal R-squared as a function of total sample size, stratified by ICC and random-effects structure.', fig.width=7, fig.height=4}
+plot_sample_size_icc_interaction(summary_table)
+```
+
+Figure 4 shows the relationship between total sample size
+($J \times n$), ICC, and MSE. As expected, MSE decreased with
+increasing sample size. Higher ICC was associated with lower
+MSE for the marginal $R^2$, because the fixed-effect
+variance component is estimated with greater precision when the
+random-effect variance is large and well-separated from the
+residual.
+
+```{r mse-table}
+mse_tbl <- summary_table |>
+  select(
+    scenario_id, n_clusters, cluster_size, icc,
+    target_r2m, re_structure,
+    nak_m_mse, joh_m_mse,
+    nak_c_mse, joh_c_mse
+  ) |>
+  mutate(across(where(is.numeric) & !scenario_id, ~round(., 5)))
+
+kable(
+  mse_tbl,
+  format = 'latex', booktabs = TRUE,
+  caption = 'MSE for marginal and conditional R-squared.',
+  label = 'mse-table',
+  col.names = c(
+    'ID', 'J', 'n', 'ICC', 'R2m', 'RE',
+    'MSE m (NS)', 'MSE m (J)',
+    'MSE c (NS)', 'MSE c (J)'
+  )
+) |>
+  kable_styling(
+    latex_options = c('hold_position', 'scale_down'),
+    font_size = 8
+  )
+```
+
+## Conditional R-Squared
+
+```{r conditional-bias-table}
+cond_tbl <- summary_table |>
+  select(
+    scenario_id, n_clusters, cluster_size, icc,
+    target_r2m, re_structure, true_r2c,
+    nak_c_bias, joh_c_bias,
+    nak_c_mcse_bias, joh_c_mcse_bias
+  ) |>
+  mutate(across(where(is.numeric) & !scenario_id, ~round(., 4)))
+
+kable(
+  cond_tbl,
+  format = 'latex', booktabs = TRUE,
+  caption = 'Bias in conditional R-squared.',
+  label = 'bias-conditional',
+  col.names = c(
+    'ID', 'J', 'n', 'ICC', 'R2m', 'RE', 'True R2c',
+    'Bias (NS)', 'Bias (J)',
+    'MCSE (NS)', 'MCSE (J)'
+  )
+) |>
+  kable_styling(
+    latex_options = c('hold_position', 'scale_down'),
+    font_size = 8
+  )
+```
+
+Both methods produced small bias for the conditional $R^2$,
+with the Johnson method occasionally showing slightly lower
+bias in random-slope scenarios. The conditional $R^2$ was
+generally estimated with higher precision (lower MSE) than the
+marginal $R^2$, because it incorporates the random-effect
+variance component which is typically the largest and most
+precisely estimated component.
+
+## Boundary Violations
+
+Boundary violations (estimates outside [0, 1]) were rare across
+all scenarios, occurring in fewer than 1% of replicates. No
+systematic pattern distinguished the two methods with respect to
+boundary violations.
+
+# Discussion
+
+The simulation results demonstrate that both the
+Nakagawa-Schielzeth and Johnson methods provide approximately
+unbiased estimates of marginal and conditional $R^2$ for LMMs
+across a broad range of data-generating conditions. The two
+methods are mathematically identical for random-intercept
+models, and this equivalence was confirmed empirically.
+Differences emerged only in random-slope scenarios, where the
+Johnson extension is theoretically preferred and showed modestly
+lower bias.
+
+Several patterns warrant attention. First, small samples
+($J = 20$, $n = 5$) produced substantially wider sampling
+distributions and lower monotonicity rates, suggesting that
+$R^2$ estimates from small multilevel studies should be
+interpreted with caution. Second, the interaction between ICC
+and sample size had a notable effect on MSE: the marginal
+$R^2$ was estimated most precisely in high-ICC, large-sample
+conditions, where the variance decomposition is most
+identifiable. Third, singular fits were common in low-ICC
+random-slope scenarios, a well-known limitation of maximum
+likelihood estimation for small variance components
+[@batesLme4LinearMixed2015].
+
+## Limitations and Future Directions
+
+This study compared only two of the six available methods. The
+Edwards et al. likelihood-ratio approach, the Jaeger et al.
+semi-partial decomposition, the Xu level-specific framework,
+and the `performance` package implementation are natural
+candidates for an expanded comparison (plan-full.md). Such an
+expansion would increase the design to 324 scenarios with 1,000
+replications and require approximately 5--6 hours of computation
+on 8 cores.
+
+The present design is restricted to balanced clusters and
+Gaussian outcomes. Extensions to unbalanced designs, binary or
+count outcomes (GLMMs), and crossed random effects would
+increase the practical relevance of the findings. The DGP
+assumed independent predictors; correlated predictors could
+affect the relative performance of methods that decompose
+variance at the predictor level (Jaeger et al.) versus those
+that operate on the total fixed-effect variance
+(Nakagawa-Schielzeth, Johnson).
+
+## Practical Recommendations
+
+Based on these results, we offer the following guidance for
+applied researchers:
+
+1. For random-intercept models, the Nakagawa-Schielzeth and
+   Johnson methods are interchangeable. Either may be reported.
+
+2. For random-slope models, the Johnson extension (trigamma
+   method) is preferred on theoretical grounds and showed
+   marginally better empirical performance.
+
+3. Both marginal and conditional $R^2$ should be reported, as
+   they answer distinct questions about population-average
+   versus cluster-specific prediction.
+
+4. In small-sample settings ($J < 30$ or $n < 10$), $R^2$
+   estimates should be accompanied by measures of uncertainty.
+   Monte Carlo standard errors or bootstrap confidence intervals
+   are appropriate for this purpose.
+
+5. Convergence diagnostics should always be checked.
+   Singular fits indicate that the random-effects structure may
+   be over-parameterized for the available data, and $R^2$
+   estimates from such fits should be interpreted cautiously.
+
+# Conclusions
+
+This simulation study provides the first systematic comparison
+of the statistical properties of $R^2$ measures for linear
+mixed-effects models under controlled conditions where the true
+variance decomposition is known. Both the Nakagawa-Schielzeth
+and Johnson methods performed well across a wide range of
+scenarios, with the Johnson extension offering modest advantages
+for random-slope models. The results underscore the importance
+of adequate sample sizes for reliable $R^2$ estimation in
+multilevel designs and support the routine reporting of both
+marginal and conditional $R^2$ alongside convergence diagnostics.
+
+# References
+
+## Morris et al. (2019) ADEMP Compliance
+
+This simulation study was audited against the reporting standards
+proposed by Morris, White, and Crowther [-@morris2019using]. The full
+audit is at `docs/morris-audit-2026-04-17.md`.
+
+**Verdict:** Mostly compliant.
+
+**Key gaps identified:**
+
+- `n_sim = 500` not documented with an explicit Monte Carlo SE justification.
+- `RNGkind('L\'Ecuyer-CMRG')` not pinned.
+- Post-run `.Random.seed` not captured per replicate; coverage is not among the reported performance measures.
+
+A remediation plan is documented in the audit file and will be
+executed in a subsequent revision.

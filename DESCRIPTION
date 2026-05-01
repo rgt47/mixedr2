@@ -1,0 +1,31 @@
+Package: mixedr2
+Title: R-Squared for Mixed Effects Models
+Version: 0.0.0.9000
+Authors@R:
+    person("Ronald G.", "Thomas", email = "rthomas@ucsd.edu", role = c("aut", "cre"))
+Description: Monte Carlo simulation study comparing R-squared methods
+    for linear mixed-effects models. Implements the ADEMP framework to
+    evaluate Nakagawa-Schielzeth (2013) and Johnson (2014) methods under
+    controlled conditions.
+License: GPL-3
+Encoding: UTF-8
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.2.0
+Imports:
+    dplyr,
+    furrr,
+    future,
+    ggplot2,
+    kableExtra,
+    knitr,
+    lme4,
+    MuMIn,
+    performance,
+    purrr,
+    r2glmm,
+    tibble,
+    tidyr
+Suggests:
+    renv,
+    testthat (>= 3.0.0)
+Config/testthat/edition: 3
