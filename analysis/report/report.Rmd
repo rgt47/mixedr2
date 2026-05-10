@@ -1,7 +1,7 @@
 ---
 title: 'Comparing R-Squared Measures for Linear Mixed Models:
   A Monte Carlo Simulation Study'
-author: 'R.G. Thomas'
+author: 'Ronald G. Thomas, Ph.D.'
 date: '`r format(Sys.Date(), "%B %d, %Y")`'
 fontsize: 11pt
 geometry: 'left=3cm,right=5cm,top=2cm,bottom=2cm'
