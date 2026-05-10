@@ -43,6 +43,53 @@ results <- readRDS('../data/derived_data/sim_results.rds')
 summary_table <- summarize_all_scenarios(results)
 ```
 
+# Abstract
+
+**Background.** The coefficient of determination $R^2$ is
+unambiguous in ordinary linear regression but admits no single
+definition for linear mixed-effects models (LMMs). The
+proliferation of competing $R^2$ measures has left applied
+researchers with limited guidance on which to report, and no
+systematic simulation study has compared their statistical
+properties under controlled conditions where the true
+variance-explained is known analytically.
+
+**Methods.** We conduct an ADEMP-compliant Monte Carlo simulation
+[@morrisUsingSimulationStudies2019] comparing the
+@nakagawaGeneralSimpleMethod2013 and
+@johnsonExtensionNakagawaSchielzeth2014 $R^2$ measures across
+a 32-scenario factorial defined by the random-effects structure
+(intercept-only, random-slopes), intra-class correlation
+(ICC $\in \{0.1, 0.5\}$), target marginal $R^2$
+($\{0.1, 0.5\}$), and sample size ($J \in \{20, 50\}$ clusters
+crossed with $n \in \{5, 20\}$ observations per cluster). Each
+scenario is evaluated at 1{,}000 replicates; performance
+measures are reported with Monte Carlo standard errors per
+@morrisUsingSimulationStudies2019, including bias, MSE,
+empirical SE, monotonicity rate, and the rate of singular fits.
+
+**Results.** Both methods provide approximately unbiased estimates
+of marginal and conditional $R^2$ across the simulated
+conditions, confirming the mathematical equivalence of the two
+methods for random-intercept models. Differences emerged only
+in random-slope scenarios, where the Johnson extension showed
+modestly lower bias on theoretical grounds. Small samples
+($J = 20$, $n = 5$) produced substantially wider sampling
+distributions and lower monotonicity rates than larger samples.
+Marginal $R^2$ was estimated most precisely in high-ICC,
+large-sample conditions, where the variance decomposition is
+most identifiable. Singular fits were common in low-ICC
+random-slope scenarios, consistent with the known limitations
+of maximum-likelihood estimation for small variance components
+[@batesLme4LinearMixed2015].
+
+**Conclusions.** For random-intercept models the two measures are
+empirically interchangeable. For random-slope models the Johnson
+extension is preferred. Both marginal and conditional $R^2$
+should be reported, accompanied by measures of uncertainty
+when $J < 30$ or $n < 10$, and by explicit convergence
+diagnostics in low-ICC random-slope settings.
+
 # Introduction
 
 Quantifying the proportion of variance explained by a statistical
@@ -673,6 +720,56 @@ for random-slope models. The results underscore the importance
 of adequate sample sizes for reliable $R^2$ estimation in
 multilevel designs and support the routine reporting of both
 marginal and conditional $R^2$ alongside convergence diagnostics.
+
+# Conflict of interest
+
+The author declares no conflicts of interest.
+
+# Funding
+
+This work received no specific funding.
+
+# Data availability statement
+
+The data and code that support the findings of this study are
+openly available in the `mixedr2` project repository.
+Per-replicate Monte Carlo outputs, ADEMP-compliant cell-level
+summaries, simulation drivers, and the analysis-plan
+documentation are versioned under
+`analysis/data/derived_data/sim_results.rds`,
+`analysis/scripts/`, and `docs/`. Specific paths are listed in
+the Reproducibility section below.
+
+# Reproducibility
+
+This manuscript was rendered with R 4.4.x inside the
+project's zzcollab Docker container (image hash recorded in
+`Dockerfile`; package set captured in `renv.lock`). Principal
+packages used by the simulation pipeline are `mixedr2` (the
+project's R package implementing the ADEMP simulation
+machinery), `lme4` (the underlying linear-mixed-effects
+fitter), `MuMIn` (Nakagawa-Schielzeth marginal and conditional
+$R^2$ via the `r.squaredGLMM` function), `performance`
+(Johnson trigamma-method extension), `furrr` and `future`
+(parallel processing), `dplyr`, `tidyr`, and `ggplot2`
+(reporting), and `rmarkdown` plus `bookdown` for the
+manuscript build.
+
+**Random-number generator.** The simulation driver sets
+`set.seed(20260411)` at the top of the replicate loop and uses
+`furrr::future_map` with `.options = furrr_options(seed = TRUE)`
+for parallel-safe RNG. Per-replicate seeds derive from the
+master seed by `+ rep_idx`.
+
+**Data and code availability.** Simulation outputs are
+checkpointed at
+`analysis/data/derived_data/sim_results.rds` (16{,}000
+replicates across 32 scenarios). Driver scripts are at
+`analysis/scripts/`. ADEMP planning documents are at
+`docs/plan-short.md` and `docs/plan-full.md`. The R package
+source is at `R/`. The manuscript source, bibliography
+(`references.bib`), and SIM CSL file are at
+`analysis/report/`.
 
 # References
 
