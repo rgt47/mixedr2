@@ -644,10 +644,10 @@ boundary violations.
 
 # Discussion
 
-The simulation results demonstrate that both the
-Nakagawa-Schielzeth and Johnson methods provide approximately
-unbiased estimates of marginal and conditional $R^2$ for LMMs
-across a broad range of data-generating conditions. The two
+We find that both the Nakagawa-Schielzeth and Johnson methods
+provide approximately unbiased estimates of marginal and
+conditional $R^2$ for LMMs across a broad range of
+data-generating conditions. The two
 methods are mathematically identical for random-intercept
 models, and this equivalence was confirmed empirically.
 Differences emerged only in random-slope scenarios, where the
@@ -716,16 +716,17 @@ applied researchers:
 
 # Conclusions
 
-This simulation study provides the first systematic comparison
+We have endeavored to provide the first systematic comparison
 of the statistical properties of $R^2$ measures for linear
 mixed-effects models under controlled conditions where the true
 variance decomposition is known. Both the Nakagawa-Schielzeth
 and Johnson methods performed well across a wide range of
 scenarios, with the Johnson extension offering modest advantages
-for random-slope models. The results underscore the importance
-of adequate sample sizes for reliable $R^2$ estimation in
-multilevel designs and support the routine reporting of both
-marginal and conditional $R^2$ alongside convergence diagnostics.
+for random-slope models. In conclusion, the results underscore
+the importance of adequate sample sizes for reliable $R^2$
+estimation in multilevel designs and support the routine
+reporting of both marginal and conditional $R^2$ alongside
+convergence diagnostics.
 
 # Conflict of interest
 
@@ -781,7 +782,7 @@ source is at `R/`. The manuscript source, bibliography
 
 ## Morris et al. (2019) ADEMP Compliance
 
-This simulation study was audited against the reporting standards
+We audited this simulation study against the reporting standards
 proposed by Morris, White, and Crowther [-@morris2019using]. The full
 audit is at `docs/morris-audit-2026-04-17.md`.
 
@@ -793,8 +794,8 @@ audit is at `docs/morris-audit-2026-04-17.md`.
 - `RNGkind('L\'Ecuyer-CMRG')` not pinned.
 - Post-run `.Random.seed` not captured per replicate; coverage is not among the reported performance measures.
 
-A remediation plan is documented in the audit file and will be
-executed in a subsequent revision.
+A remediation plan is recorded in the audit file and will be
+taken up in a subsequent revision.
 
 
 ```{r footer, echo=FALSE, results='asis'}
