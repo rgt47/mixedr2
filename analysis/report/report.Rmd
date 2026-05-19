@@ -128,8 +128,7 @@ different conclusions about model adequacy.
 Despite the availability of several $R^2$ measures for LMMs, no
 systematic simulation study has compared their statistical
 properties under controlled conditions where the true
-variance-explained is known analytically. The present study
-addresses this gap. We compare the two most widely used
+variance-explained is known analytically. We address this gap. We compare the two most widely used
 approaches -- @nakagawaGeneralSimpleMethod2013 and
 @johnsonExtensionNakagawaSchielzeth2014 -- via Monte Carlo
 simulation following the ADEMP framework
