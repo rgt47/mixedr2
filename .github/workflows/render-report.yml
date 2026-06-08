@@ -38,6 +38,7 @@ jobs:
             -w /project compendium-env \
             Rscript -e '
               renv::restore()
+              devtools::install(quiet = TRUE)
               rmds <- list.files(
                 "analysis", pattern = "^report[.]Rmd$",
                 recursive = TRUE, full.names = TRUE
