@@ -29,4 +29,5 @@ Suggests:
     r2glmm,
     rmarkdown,
     rprojroot,
+    testthat,
     tinytest
