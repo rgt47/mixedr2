@@ -89,6 +89,12 @@
 \setlength{\emergencystretch}{3em} % prevent overfull lines
 \providecommand{\tightlist}{%
   \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{lineno}
+\linenumbers
+\usepackage{setspace}
+\setstretch{1.1}
 \usepackage{booktabs}
 \usepackage{longtable}
 \usepackage{array}
@@ -106,6 +112,10 @@
 \usepackage{bookmark}
 \IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
 \urlstyle{same}
+% fallback for those not using the hyperref driver hyperxmp:
+\makeatletter
+\@ifundefined{xmpquote}{\newcommand{\xmpquote}[1]{#1}}{}
+\makeatother
 \hypersetup{
   pdftitle={Comparing R-Squared Measures for Linear Mixed Models: A Monte Carlo Simulation Study},
   pdfauthor={Ronald G. Thomas, Ph.D.},
@@ -116,7 +126,7 @@
 Carlo Simulation Study}
 \author{Ronald G. Thomas,
 Ph.D.\thanks{Wertheim School of Public Health, UCSD; ORCID: 0000-0003-1686-4965}}
-\date{May 11, 2026}
+\date{July 05, 2026}
 
 \begin{document}
 \maketitle
@@ -200,8 +210,8 @@ different conclusions about model adequacy.
 Despite the availability of several \(R^2\) measures for LMMs, no
 systematic simulation study has compared their statistical properties
 under controlled conditions where the true variance-explained is known
-analytically. The present study addresses this gap. We compare the two
-most widely used approaches
+analytically. We address this gap. We compare the two most widely used
+approaches
 --\textsuperscript{\citeproc{ref-nakagawaGeneralSimpleMethod2013}{2}}
 and\textsuperscript{\citeproc{ref-johnsonExtensionNakagawaSchielzeth2014}{3}}
 -- via Monte Carlo simulation following the ADEMP
@@ -776,13 +786,13 @@ violations.
 
 \section{Discussion}\label{discussion}
 
-The simulation results demonstrate that both the Nakagawa-Schielzeth and
-Johnson methods provide approximately unbiased estimates of marginal and
-conditional \(R^2\) for LMMs across a broad range of data-generating
-conditions. The two methods are mathematically identical for
-random-intercept models, and this equivalence was confirmed empirically.
-Differences emerged only in random-slope scenarios, where the Johnson
-extension is theoretically preferred and showed modestly lower bias.
+We find that both the Nakagawa-Schielzeth and Johnson methods provide
+approximately unbiased estimates of marginal and conditional \(R^2\) for
+LMMs across a broad range of data-generating conditions. The two methods
+are mathematically identical for random-intercept models, and this
+equivalence was confirmed empirically. Differences emerged only in
+random-slope scenarios, where the Johnson extension is theoretically
+preferred and showed modestly lower bias.
 
 Several patterns warrant attention. First, small samples (\(J = 20\),
 \(n = 5\)) produced substantially wider sampling distributions and lower
@@ -848,15 +858,16 @@ researchers:
 
 \section{Conclusions}\label{conclusions}
 
-This simulation study provides the first systematic comparison of the
+We have endeavored to provide the first systematic comparison of the
 statistical properties of \(R^2\) measures for linear mixed-effects
 models under controlled conditions where the true variance decomposition
 is known. Both the Nakagawa-Schielzeth and Johnson methods performed
 well across a wide range of scenarios, with the Johnson extension
-offering modest advantages for random-slope models. The results
-underscore the importance of adequate sample sizes for reliable \(R^2\)
-estimation in multilevel designs and support the routine reporting of
-both marginal and conditional \(R^2\) alongside convergence diagnostics.
+offering modest advantages for random-slope models. In conclusion, the
+results underscore the importance of adequate sample sizes for reliable
+\(R^2\) estimation in multilevel designs and support the routine
+reporting of both marginal and conditional \(R^2\) alongside convergence
+diagnostics.
 
 \section{Conflict of interest}\label{conflict-of-interest}
 
@@ -912,7 +923,7 @@ package source is at \texttt{R/}. The manuscript source, bibliography
 \subsection{Morris et al.~(2019) ADEMP
 Compliance}\label{morris-et-al.-2019-ademp-compliance}
 
-This simulation study was audited against the reporting standards
+We audited this simulation study against the reporting standards
 proposed by Morris, White, and
 Crowther\textsuperscript{\citeproc{ref-morris2019using}{12}}. The full
 audit is at \texttt{docs/morris-audit-2026-04-17.md}.
@@ -934,16 +945,16 @@ audit is at \texttt{docs/morris-audit-2026-04-17.md}.
   not among the reported performance measures.
 \end{itemize}
 
-A remediation plan is documented in the audit file and will be executed
-in a subsequent revision.
+A remediation plan is recorded in the audit file and will be taken up in
+a subsequent revision.
 
 \vfill
 
 \begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
 
-\emph{Rendered on 2026-05-11 at 18:42 PDT.}\\
+\emph{Rendered on 2026-07-05 at 17:09 PDT.}\\
 \emph{Source:
-\texttt{\textasciitilde{}/prj/res/17-mixed-r2/mixedr2/analysis/report/report.Rmd}}
+\texttt{/Users/zenn/Library/CloudStorage/Dropbox/prj/res/17-mixed-r2/mixedr2/analysis/report/report.Rmd}}
 
 \protect\phantomsection\label{refs}
 \begin{CSLReferences}{0}{1}
