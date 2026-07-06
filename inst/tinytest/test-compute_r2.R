@@ -5,10 +5,10 @@ params <- solve_dgp_params(0.20, 0.30, n_fixed = 2)
 dat <- generate_lmm_data(30, 10, params, seed = 42)
 result <- fit_lmm(dat, re_structure = "intercept", n_fixed = 2)
 
-expect_type(result, "list")
+expect_true(is.list(result))
 expect_true(result$converged)
-expect_type(result$singular, "logical")
-expect_s4_class(result$model, "lmerMod")
+expect_true(is.logical(result$singular))
+expect_true(is(result$model, "lmerMod"))
 
 # fit_lmm handles slope structure
 params <- solve_dgp_params(
@@ -25,8 +25,8 @@ dat <- generate_lmm_data(50, 20, params, seed = 42)
 fit <- fit_lmm(dat, re_structure = "intercept", n_fixed = 2)
 
 r2 <- extract_r2_nakagawa(fit$model)
-expect_length(r2, 2)
-expect_named(r2, c("R2m", "R2c"))
+expect_equal(length(r2), 2L)
+expect_equal(names(r2), c("R2m", "R2c"))
 expect_true(r2[["R2m"]] >= 0 && r2[["R2m"]] <= 1)
 expect_true(r2[["R2c"]] >= r2[["R2m"]])
 
@@ -36,8 +36,8 @@ dat <- generate_lmm_data(50, 20, params, seed = 42)
 fit <- fit_lmm(dat, re_structure = "intercept", n_fixed = 2)
 
 r2 <- extract_r2_johnson(fit$model)
-expect_length(r2, 2)
-expect_named(r2, c("R2m", "R2c"))
+expect_equal(length(r2), 2L)
+expect_equal(names(r2), c("R2m", "R2c"))
 expect_true(r2[["R2m"]] >= 0 && r2[["R2m"]] <= 1)
 
 # compute_all_r2 returns tibble with 4 columns
@@ -46,7 +46,7 @@ dat <- generate_lmm_data(50, 20, params, seed = 42)
 fit <- fit_lmm(dat, re_structure = "intercept", n_fixed = 2)
 
 r2_all <- compute_all_r2(fit$model)
-expect_s3_class(r2_all, "tbl_df")
+expect_inherits(r2_all, "tbl_df")
 expect_equal(nrow(r2_all), 1)
 expect_true(
   all(c("nak_r2m", "nak_r2c", "joh_r2m", "joh_r2c")

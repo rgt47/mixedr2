@@ -5,14 +5,14 @@ params <- solve_dgp_params(
   target_r2m = 0.10, target_icc = 0.40,
   n_fixed = 2, re_structure = "intercept"
 )
-expect_type(params, "list")
-expect_named(
-  params,
+expect_true(is.list(params))
+expect_equal(
+  names(params),
   c("beta", "tau0", "tau1", "sigma", "var_fixed",
     "var_random", "var_total", "true_r2m", "true_r2c",
     "true_icc")
 )
-expect_length(params$beta, 2)
+expect_equal(length(params$beta), 2L)
 expect_equal(params$tau1, 0)
 
 # solve_dgp_params recovers target R2m and ICC
@@ -30,14 +30,14 @@ for (i in seq_len(nrow(targets))) {
   expect_equal(
     params$true_r2m, targets$r2m[i],
     tolerance = 1e-10,
-    label = sprintf("R2m at r2m=%.2f, icc=%.2f",
-                     targets$r2m[i], targets$icc[i])
+    info = sprintf("R2m at r2m=%.2f, icc=%.2f",
+                   targets$r2m[i], targets$icc[i])
   )
   expect_equal(
     params$true_icc, targets$icc[i],
     tolerance = 1e-10,
-    label = sprintf("ICC at r2m=%.2f, icc=%.2f",
-                     targets$r2m[i], targets$icc[i])
+    info = sprintf("ICC at r2m=%.2f, icc=%.2f",
+                   targets$r2m[i], targets$icc[i])
   )
 }
 
