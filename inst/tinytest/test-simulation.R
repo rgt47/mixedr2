@@ -9,7 +9,7 @@ result <- run_single_replicate(
   n_fixed = 2, seed = 42
 )
 
-expect_s3_class(result, "tbl_df")
+expect_true(inherits(result, "tbl_df"))
 expect_equal(nrow(result), 1)
 expected_cols <- c(
   "nak_r2m", "nak_r2c", "joh_r2m", "joh_r2c",
