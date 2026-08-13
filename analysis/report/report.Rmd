@@ -784,7 +784,7 @@ source is at `R/`. The manuscript source, bibliography
 ## Morris et al. (2019) ADEMP Compliance
 
 We audited this simulation study against the reporting standards
-proposed by Morris, White, and Crowther [-@morris2019using]. The full
+proposed by Morris, White, and Crowther [-@morrisUsingSimulationStudies2019]. The full
 audit is at `docs/morris-audit-2026-04-17.md`.
 
 **Verdict:** Mostly compliant.
