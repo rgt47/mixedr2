@@ -34,10 +34,12 @@ ggsave(
   p3, width = 10, height = 6
 )
 
-p5 <- plot_sample_size_icc_interaction(summary_table)
+# Matches report.Rmd prose "Figure 4" (fourth fig.cap chunk in the
+# manuscript: bias heatmap, distributions, monotonicity, this one).
+p4 <- plot_sample_size_icc_interaction(summary_table)
 ggsave(
-  file.path(fig_dir, "fig5_sample_icc_interaction.pdf"),
-  p5, width = 8, height = 5
+  file.path(fig_dir, "fig4_sample_icc_interaction.pdf"),
+  p4, width = 8, height = 5
 )
 
 write.csv(

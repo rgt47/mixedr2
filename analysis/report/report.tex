@@ -139,8 +139,8 @@
   \renewcommand{\headrulewidth}{0pt}%
   \renewcommand{\footrulewidth}{0.4pt}}
 \renewcommand{\stampsource}{\textasciitilde{}/\allowbreak{}prj/\allowbreak{}res/\allowbreak{}17-mixed-r2/\allowbreak{}mixedr2/\allowbreak{}analysis/\allowbreak{}report/\allowbreak{}report.Rmd}
-\renewcommand{\stamptime}{2026-08-16 10:08 PDT}
-\renewcommand{\stampversion}{\detokenize{e1f2488-wip}}
+\renewcommand{\stamptime}{2026-08-16 16:22 PDT}
+\renewcommand{\stampversion}{\detokenize{e0084d3-wip}}
 \usepackage{amsmath}
 \usepackage{amssymb}
 \usepackage{booktabs}
@@ -170,12 +170,12 @@
 \@ifundefined{xmpquote}{\newcommand{\xmpquote}[1]{#1}}{}
 \makeatother
 \hypersetup{
-  pdftitle={Comparing R-Squared Measures for Linear Mixed Models: A Monte Carlo Simulation Study},
+  pdftitle={Bias{,} Precision{,} and Monotonicity of Marginal and Conditional R-Squared for Linear Mixed Models: A Monte Carlo Comparison of the Nakagawa-Schielzeth and Johnson Estimators},
   pdfauthor={Ronald G. Thomas, Ph.D.},
   hidelinks,
   pdfcreator={LaTeX via pandoc}}
 
-\title{Comparing R-Squared Measures for Linear Mixed Models: A Monte Carlo Simulation Study}
+\title{Bias, Precision, and Monotonicity of Marginal and Conditional R-Squared for Linear Mixed Models: A Monte Carlo Comparison of the Nakagawa-Schielzeth and Johnson Estimators}
 \author{Ronald G. Thomas, Ph.D.\thanks{Wertheim School of Public Health, UCSD; ORCID: 0000-0003-1686-4965}}
 \date{August 16, 2026}
 
@@ -193,19 +193,23 @@
 unambiguous in ordinary linear regression but admits no single
 definition for linear mixed-effects models (LMMs). The
 proliferation of competing \(R^2\) measures has left applied
-researchers with limited guidance on which to report, and no
-systematic simulation study has compared their statistical
-properties under controlled conditions where the true
-variance-explained is known analytically.
+researchers with limited guidance on which to report. Existing
+comparisons of the Nakagawa-Schielzeth and Johnson estimators
+are largely illustrative or closed-form; a replicated Monte
+Carlo evaluation of their bias, MSE, and monotonicity across a
+designed factorial grid with known ground truth has been
+lacking.
 
 \textbf{Methods.} We conduct an ADEMP-compliant Monte Carlo simulation\textsuperscript{\citeproc{ref-morrisUsingSimulationStudies2019}{1}} comparing the\textsuperscript{\citeproc{ref-nakagawaGeneralSimpleMethod2013}{2}} and\textsuperscript{\citeproc{ref-johnsonExtensionNakagawaSchielzeth2014}{3}} \(R^2\) measures across
-a 32-scenario factorial defined by the random-effects structure
-(intercept-only, random-slopes), intra-class correlation
-(ICC \(\in \{0.1, 0.5\}\)), target marginal \(R^2\)
-(\(\{0.1, 0.5\}\)), and sample size (\(J \in \{20, 50\}\) clusters
-crossed with \(n \in \{5, 20\}\) observations per cluster). Each
-scenario is evaluated at 1\{,\}000 replicates; performance
-measures are reported with Monte Carlo standard errors per\textsuperscript{\citeproc{ref-morrisUsingSimulationStudies2019}{1}}, including bias, MSE,
+a 32-scenario factorial defined by the random-effects
+structure (intercept-only, random-slopes), intra-class correlation
+(ICC \(\in \{0.10, 0.40\}\)), target marginal \(R^2\)
+(\(\{0.10, 0.40\}\)), and sample size (\(J \in \{20, 50\}\)
+clusters crossed with \(n \in \{5, 20\}\) observations per cluster).
+Each scenario is evaluated at 500 replicates
+(16,000 model fits in total);
+performance measures are reported with Monte Carlo standard errors
+per\textsuperscript{\citeproc{ref-morrisUsingSimulationStudies2019}{1}}, including bias, MSE,
 empirical SE, monotonicity rate, and the rate of singular fits.
 
 \textbf{Results.} Both methods provide approximately unbiased estimates
@@ -248,7 +252,8 @@ which to report.
 This ambiguity has practical consequences. Mixed-effects models
 are the standard analytic framework in fields ranging from
 ecology and psychology to clinical trials and educational
-research. Reporting effect sizes and variance-explained
+research\textsuperscript{\citeproc{ref-raudenbushHLM2002}{5},\citeproc{ref-snijdersMultilevelAnalysis2012}{6}}. Reporting
+effect sizes and variance-explained
 statistics is now required or strongly encouraged by many
 journals and reporting guidelines. Yet when investigators report
 \(R^2\) for an LMM, the particular definition employed -- and its
@@ -257,14 +262,23 @@ is rarely discussed. Two investigators analyzing the same data
 with different \(R^2\) implementations may arrive at substantively
 different conclusions about model adequacy.
 
-Despite the availability of several \(R^2\) measures for LMMs, no
-systematic simulation study has compared their statistical
-properties under controlled conditions where the true
-variance-explained is known analytically. We address this gap. We compare the two most widely used
+Despite the availability of several \(R^2\) measures for LMMs, a
+replicated Monte Carlo comparison of their bias, precision, and
+monotonicity properties under controlled, known-truth conditions
+has been lacking specifically for the two most widely reported
+estimators. Related work exists but does not fill this gap:\textsuperscript{\citeproc{ref-piephoCoefficientDeterminationR22019}{7}} offers a methodological
+commentary and worked examples rather than a factorial simulation
+study, and\textsuperscript{\citeproc{ref-stoffelPartR2Partitioning2021}{8}} introduce the \texttt{partR2}
+package for semi-partial variance decomposition, a complementary
+but distinct estimand from the marginal/conditional split evaluated
+here. We address the remaining gap for the
+two-method case. We compare the two most widely used
 approaches --\textsuperscript{\citeproc{ref-nakagawaGeneralSimpleMethod2013}{2}} and\textsuperscript{\citeproc{ref-johnsonExtensionNakagawaSchielzeth2014}{3}} -- via Monte Carlo
-simulation following the ADEMP framework\textsuperscript{\citeproc{ref-morrisUsingSimulationStudies2019}{1}}. Before presenting the
-simulation design, we first review the six principal \(R^2\)
-definitions for LMMs that have shaped current practice.
+simulation following the ADEMP framework\textsuperscript{\citeproc{ref-morrisUsingSimulationStudies2019}{1}}. This paper does not attempt to
+displace or benchmark against the broader landscape of \(R^2\)
+proposals; before presenting the simulation design, we briefly
+review six principal \(R^2\) definitions for LMMs to situate the two
+compared methods, only two of which are evaluated empirically.
 
 \subsection{R-Squared Measures for Linear Mixed Models}\label{r-squared-measures-for-linear-mixed-models}
 
@@ -294,7 +308,7 @@ random effects as explained variance:
 
 \[R^2_c = \frac{\sigma^2_f + \sigma^2_\alpha}{\sigma^2_f + \sigma^2_\alpha + \sigma^2_\varepsilon}\]
 
-This approach is implemented in \texttt{MuMIn::r.squaredGLMM()}\textsuperscript{\citeproc{ref-bartonMuMIn2024}{5}} and \texttt{performance::r2\_nakagawa()}\textsuperscript{\citeproc{ref-ludeckePerformanceAssessment2021}{6}}. Its principal strengths
+This approach is implemented in \texttt{MuMIn::r.squaredGLMM()}\textsuperscript{\citeproc{ref-bartonMuMIn2024}{9}} and \texttt{performance::r2\_nakagawa()}\textsuperscript{\citeproc{ref-ludeckePerformanceAssessment2021}{10}}. Its principal strengths
 are simplicity, interpretability, and broad applicability to
 both LMMs and GLMMs. The marginal/conditional distinction maps
 naturally onto research questions about population-average versus
@@ -327,12 +341,12 @@ for intercept-only models. Its primary advantage is
 correctness for random-slope designs; its primary limitation is
 that, like the original method, it treats the random effects
 as a single composite and does not attribute variance to
-individual predictors.\textsuperscript{\citeproc{ref-nakagawaUpdatedArticleCoefficient2017}{7}} subsequently unified
+individual predictors.\textsuperscript{\citeproc{ref-nakagawaUpdatedArticleCoefficient2017}{11}} subsequently unified
 these approaches in an updated treatment.
 
 \subsubsection{Edwards et al.~(2008)}\label{edwards-et-al.-2008}
 
-\textsuperscript{\citeproc{ref-edwardsR2StatisticFixed2008}{8}} proposed a likelihood-ratio-based
+\textsuperscript{\citeproc{ref-edwardsR2StatisticFixed2008}{12}} proposed a likelihood-ratio-based
 \(R^2\) specifically for the fixed-effects portion of an LMM.
 Their statistic is defined as:
 
@@ -357,7 +371,7 @@ which change with model specification.
 
 \subsubsection{Jaeger et al.~(2017)}\label{jaeger-et-al.-2017}
 
-\textsuperscript{\citeproc{ref-jaegerR2glmmSemiPartialR22017}{9}} extended the Edwards et al.
+\textsuperscript{\citeproc{ref-jaegerR2glmmSemiPartialR22017}{13}} extended the Edwards et al.
 framework by introducing \emph{semi-partial} \(R^2\) statistics that
 decompose the fixed-effect \(R^2\) into contributions from
 individual predictors or sets of predictors. Their approach
@@ -379,14 +393,14 @@ conditional \(R^2\).
 
 \subsubsection{Xu (2003)}\label{xu-2003}
 
-\textsuperscript{\citeproc{ref-xuMeasuringExplainedVariation2003}{10}} proposed level-specific
+\textsuperscript{\citeproc{ref-xuMeasuringExplainedVariation2003}{14}} proposed level-specific
 \(R^2\) measures that separately quantify the variance explained
 at each level of the multilevel hierarchy. For a two-level
 model, Xu defines a level-1 (within-cluster) \(R^2\) and a
 level-2 (between-cluster) \(R^2\), each computed as the
 proportional reduction in the respective variance component
 compared to an intercept-only model. This approach shares
-conceptual ground with the earlier proposal of\textsuperscript{\citeproc{ref-snijdersExplainedVariationMultilevel1994}{11}}.
+conceptual ground with the earlier proposal of\textsuperscript{\citeproc{ref-snijdersExplainedVariationMultilevel1994}{15}}.
 
 The level-specific perspective is appealing when the research
 question explicitly distinguishes within- and between-cluster
@@ -399,7 +413,7 @@ no widely used R package provides this statistic directly.
 
 \subsubsection{\texorpdfstring{The \texttt{performance} Package Implementation}{The performance Package Implementation}}\label{the-performance-package-implementation}
 
-The \texttt{performance} package\textsuperscript{\citeproc{ref-ludeckePerformanceAssessment2021}{6}}
+The \texttt{performance} package\textsuperscript{\citeproc{ref-ludeckePerformanceAssessment2021}{10}}
 provides \texttt{r2\_nakagawa()}, which implements the
 Nakagawa-Schielzeth framework with the Johnson extension for
 random slopes. Although the statistical method is nominally
@@ -411,6 +425,24 @@ designs and correctly specified models, the two implementations
 agree closely, but discrepancies can arise with unbalanced data
 or complex random-effects structures. Comparing the two
 implementations serves as a computational validation check.
+
+\subsubsection{\texorpdfstring{The \texttt{partR2} Package (Stoffel et al., 2021)}{The partR2 Package (Stoffel et al., 2021)}}\label{the-partr2-package-stoffel-et-al.-2021}
+
+\textsuperscript{\citeproc{ref-stoffelPartR2Partitioning2021}{8}} implement \texttt{partR2}, which extends
+the Nakagawa-Schielzeth marginal/conditional split to a
+\emph{semi-partial} decomposition: the marginal \(R^2\) is further
+attributed to individual fixed effects or predictor sets, in a
+spirit similar to Jaeger et al.~(2017) but built directly on the
+Nakagawa-Schielzeth variance definitions and implemented for both
+LMMs and GLMMs with parametric-bootstrap confidence intervals.
+\texttt{partR2} postdates and is compatible with, rather than
+competing against, the Nakagawa-Schielzeth/Johnson framework
+evaluated here; it answers a different question (which predictors
+explain variance) than the one this study addresses (how
+accurately do the two whole-model \(R^2\) estimators recover the
+truth). It is not included in the empirical comparison because it
+targets predictor-level attribution rather than the whole-model
+\(R^2_m\)/\(R^2_c\) estimands studied here.
 
 \subsection{Summary of Methods}\label{summary-of-methods}
 
@@ -440,18 +472,36 @@ performance package & Marginal + conditional & Correct & performance\\
 \end{tabular}
 \end{table}
 
-The present study focuses on the Nakagawa-Schielzeth and Johnson
-methods, which are the most frequently reported in applied
-research and which jointly account for the vast majority of
-\(R^2\) values published for LMMs. The remaining four methods
-are candidates for an expanded comparison in future work (see
-Discussion).
+Table \ref{tab:methods-summary} situates all six approaches, but
+only the first two rows (Nakagawa-Schielzeth and Johnson) are
+evaluated empirically in this study; the remaining rows are
+included for context and are not simulated here. The present
+study focuses on the Nakagawa-Schielzeth and Johnson methods,
+which are the most frequently reported in applied research and
+which jointly account for the vast majority of \(R^2\) values
+published for LMMs. Each of the remaining four is excluded from
+the empirical comparison for a specific reason, not merely
+deferred: Edwards et al.~(2008) and Jaeger et al.~(2017) target
+fixed-effects-only estimands with no conditional-\(R^2\) analogue,
+so they are not directly comparable to the marginal/conditional
+pair studied here; Xu (2003) requires custom implementation with
+no maintained R package, which is out of scope for a simulation
+of this size; and the \texttt{performance} package implementation is
+numerically near-identical to \texttt{MuMIn::r.squaredGLMM()} for the
+balanced designs used in this study (see previous section), so
+including it would not add independent information beyond the
+two methods already compared. All four remain candidates for an
+expanded comparison if the design and compute budget in
+\texttt{docs/plan-full.md} are executed (see Discussion).
 
 \section{Simulation Design}\label{simulation-design}
 
 The simulation follows the ADEMP framework\textsuperscript{\citeproc{ref-morrisUsingSimulationStudies2019}{1}}, which structures
 simulation studies around five components: Aims, Data-generating
-mechanisms, Estimands, Methods, and Performance measures.
+mechanisms, Estimands, Methods, and Performance measures. This
+structured-design approach follows the broader recommendation
+that simulation studies in medical statistics be planned and
+reported as formally as any other empirical study\textsuperscript{\citeproc{ref-burtonDesignAnalysisMonteCarlo2006}{16}}.
 
 \subsection{Aims}\label{aims}
 
@@ -496,6 +546,25 @@ two target quantities: the marginal \(R^2\) and the ICC. Fixing
 and the fixed-effect coefficients are solved to achieve the
 target \(R^2_m\). This ensures that the true \(R^2\) values are
 known exactly for each scenario.
+
+In random-slope scenarios, the random-slope variance is fixed
+at \(\tau_1 = 0.5 \, \tau_0\) (implemented in
+\texttt{R/math\_utilities.R::solve\_dgp\_params()}), i.e.~the random
+slope's SD is set to half the random intercept's SD. This is a
+disclosed design choice, not a quantity solved for from ICC or
+target \(R^2_m\): it fixes a single, moderate slope-to-intercept
+variance ratio (\(\tau_1^2 / \tau_0^2 = 0.25\)) so that
+\texttt{var\_random\ =\ tau0\^{}2\ +\ tau1\^{}2} and hence the true conditional
+\(R^2\) are well-defined and reproducible across scenarios, without
+introducing a sixth crossed factor. This ratio was not varied
+factorially, so every random-slope result in this manuscript
+(Tables \ref{tab:bias-marginal}, \ref{tab:mse-table}, and
+\ref{tab:bias-conditional}) is conditional on this one value; the
+random-slope conclusions should be read as applying to this
+specific, moderate ratio and not as general claims about
+arbitrary slope-to-intercept variance ratios. A factorial
+sensitivity analysis that varies \(\tau_1/\tau_0\) (e.g.~across
+\(\{0.25, 0.5, 1.0\}\)) is a natural extension for future work.
 
 The full factorial design crosses five factors:
 
@@ -853,10 +922,35 @@ This study compared only two of the six available methods. The
 Edwards et al.~likelihood-ratio approach, the Jaeger et al.
 semi-partial decomposition, the Xu level-specific framework,
 and the \texttt{performance} package implementation are natural
-candidates for an expanded comparison (plan-full.md). Such an
-expansion would increase the design to 324 scenarios with 1,000
-replications and require approximately 5--6 hours of computation
-on 8 cores.
+candidates for an expanded comparison (plan-full.md); the
+rationale for excluding each from the present empirical
+comparison is stated in the ``Summary of Methods'' section above.
+Such an expansion would increase the design to 324 scenarios
+with 1,000 replications and, by extrapolation from the current
+32-scenario/500-replicate run time, is \emph{estimated} (not
+benchmarked) to require approximately 5--6 hours of computation
+on 8 cores; this figure has not been verified by a partial or
+pilot run at the expanded scale and should be treated as a rough
+projection only.
+
+The random-slope conclusions in this study (Results,
+Discussion) are conditional on a single, disclosed
+slope-to-intercept variance ratio, \(\tau_1 = 0.5\,\tau_0\) (see
+Data-Generating Mechanisms), which was not varied factorially.
+They should not be read as general claims across arbitrary
+random-slope variance structures.
+
+The fitted models use \texttt{lme4}'s default correlated
+random-intercept/random-slope parameterization
+(\texttt{(1\ +\ x1\ \textbar{}\ cluster\_id)}, an unstructured \(G\) matrix), whereas the
+data-generating process draws the random intercept and random
+slope independently (\texttt{R/generate\_data.R}). This mismatch reflects
+standard applied practice -- most analysts fit an unstructured
+\(G\) matrix without first testing whether the true intercept-slope
+correlation is zero -- but it means the fitted models estimate one
+more variance-covariance parameter than the DGP requires, which
+plausibly contributes to the elevated singular-fit rate observed
+in low-ICC random-slope scenarios (Results, Convergence).
 
 The present design is restricted to balanced clusters and
 Gaussian outcomes. Extensions to unbalanced designs, binary or
@@ -867,6 +961,18 @@ affect the relative performance of methods that decompose
 variance at the predictor level (Jaeger et al.) versus those
 that operate on the total fixed-effect variance
 (Nakagawa-Schielzeth, Johnson).
+
+Finally, this study does not report coverage of confidence or
+credible intervals for \(\hat{R}^2\), a performance measure
+recommended by\textsuperscript{\citeproc{ref-morrisUsingSimulationStudies2019}{1}} and standard in
+\(R^2\)-estimator evaluations. It is omitted here because neither
+\texttt{MuMIn::r.squaredGLMM()} nor the trigamma extension returns an
+analytic standard error or interval for \(R^2_m\)/\(R^2_c\);
+constructing one would require a bootstrap or delta-method
+addition to the estimation pipeline (\texttt{R/compute\_r2.R}), which was
+judged out of scope for the present two-method comparison. Adding
+a bootstrap-based coverage measure is a concrete target for a
+future revision of \texttt{R/performance\_metrics.R}.
 
 \subsection{Practical Recommendations}\label{practical-recommendations}
 
@@ -939,18 +1045,41 @@ project's zzcollab Docker container (image hash recorded in
 packages used by the simulation pipeline are \texttt{mixedr2} (the
 project's R package implementing the ADEMP simulation
 machinery), \texttt{lme4} (the underlying linear-mixed-effects
-fitter), \texttt{MuMIn} (Nakagawa-Schielzeth marginal and conditional
-\(R^2\) via the \texttt{r.squaredGLMM} function), \texttt{performance}
-(Johnson trigamma-method extension), \texttt{furrr} and \texttt{future}
-(parallel processing), \texttt{dplyr}, \texttt{tidyr}, and \texttt{ggplot2}
-(reporting), and \texttt{rmarkdown} plus \texttt{bookdown} for the
-manuscript build.
+fitter), and \texttt{MuMIn} (both the Nakagawa-Schielzeth and Johnson
+\(R^2\) estimators, via \texttt{r.squaredGLMM()} with the default and
+\texttt{method\ =\ "trigamma"} arguments respectively; see
+\texttt{R/compute\_r2.R}). The \texttt{performance} package is discussed in the
+literature review as a comparator implementation of the same
+statistical method but is not invoked anywhere in the simulation
+pipeline that produced the reported numbers. Additional packages
+are \texttt{furrr} and \texttt{future} (parallel processing), \texttt{dplyr},
+\texttt{tidyr}, and \texttt{ggplot2} (reporting), and \texttt{rmarkdown} plus
+\texttt{bookdown} for the manuscript build.
 
-\textbf{Random-number generator.} The simulation driver sets
-\texttt{set.seed(20260411)} at the top of the replicate loop and uses
-\texttt{furrr::future\_map} with \texttt{.options\ =\ furrr\_options(seed\ =\ TRUE)}
-for parallel-safe RNG. Per-replicate seeds derive from the
-master seed by \texttt{+\ rep\_idx}.
+\textbf{Random-number generator.} \texttt{analysis/scripts/simulation.R}
+pins \texttt{RNGkind("L\textquotesingle{}Ecuyer-CMRG")} once at program start, before any
+seeding, per Morris et al.~(2019) Section 4.1. Per-replicate
+seeds are not derived from a running counter; instead,
+\texttt{create\_scenario\_grid()} (\texttt{R/generate\_data.R}) calls
+\texttt{set.seed(master\_seed)} once, with \texttt{master\_seed\ =\ 20260306}, and
+then draws one seed per scenario-replicate via
+\texttt{sample.int(.Machine\$integer.max,\ total\_reps)}, so every one of
+the 16,000 replicate-level seeds is pre-generated and stored in
+the scenario grid before any model fitting begins. Each
+replicate's stored seed is consumed exactly once, by
+\texttt{set.seed(seed)} inside \texttt{generate\_lmm\_data()}
+(\texttt{R/generate\_data.R}), immediately before that replicate's data
+are drawn. Parallel execution across replicates within a
+scenario uses \texttt{furrr::future\_map\_dfr()} with
+\texttt{furrr\_options(seed\ =\ NULL)} (\texttt{R/simulation.R::run\_scenario()}):
+\texttt{seed\ =\ NULL} is appropriate here, rather than a gap in the
+seeding strategy, because RNG state is already made
+reproducible explicitly by the pre-drawn, per-replicate
+\texttt{set.seed()} call described above, so \texttt{furrr}'s own parallel-safe
+seeding layer would be redundant. A reader who wants to reproduce
+a specific replicate should regenerate the scenario grid with
+\texttt{create\_scenario\_grid(master\_seed\ =\ 20260306)} and read off that
+replicate's \texttt{seed} column, not compute \texttt{master\_seed\ +\ rep\_idx}.
 
 \textbf{Data and code availability.} Simulation outputs are
 checkpointed at
@@ -967,25 +1096,46 @@ source is at \texttt{R/}. The manuscript source, bibliography
 \subsection{Morris et al.~(2019) ADEMP Compliance}\label{morris-et-al.-2019-ademp-compliance}
 
 We audited this simulation study against the reporting standards
-proposed by Morris, White, and Crowther\textsuperscript{\citeproc{ref-morrisUsingSimulationStudies2019}{1}}. The full
-audit is at \texttt{docs/morris-audit-2026-04-17.md}.
+proposed by Morris, White, and Crowther\textsuperscript{\citeproc{ref-morrisUsingSimulationStudies2019}{1}}. This section reports the
+audit re-run against the code that produced the results in this
+manuscript, superseding the earlier
+\texttt{docs/morris-audit-2026-04-17.md} snapshot, two of whose three
+listed gaps are now closed in the code as it stands.
 
 \textbf{Verdict:} Mostly compliant.
 
-\textbf{Key gaps identified:}
+\textbf{Gaps closed since the prior audit:}
 
 \begin{itemize}
 \tightlist
 \item
-  \texttt{n\_sim\ =\ 500} not documented with an explicit Monte Carlo SE justification.
+  \texttt{n\_sim\ =\ 500} is now documented with an explicit Monte Carlo SE
+  justification in \texttt{analysis/scripts/simulation.R} (bias MCSE
+  \(\le 0.002\) at empirical SE \(\approx 0.04\) requires
+  \(n_{sim} \ge 400\); \(n_{sim} = 500\) gives bias MCSE
+  \(\approx 0.0018\)).
 \item
-  \texttt{RNGkind(\textquotesingle{}L\textbackslash{}\textquotesingle{}Ecuyer-CMRG\textquotesingle{})} not pinned.
-\item
-  Post-run \texttt{.Random.seed} not captured per replicate; coverage is not among the reported performance measures.
+  \texttt{RNGkind("L\textquotesingle{}Ecuyer-CMRG")} is now pinned at the top of
+  \texttt{analysis/scripts/simulation.R}, before any seeding.
 \end{itemize}
 
-A remediation plan is recorded in the audit file and will be
-taken up in a subsequent revision.
+\textbf{Gaps still open:}
+
+\begin{itemize}
+\tightlist
+\item
+  Post-run \texttt{.Random.seed} is not captured per replicate, so the
+  exact RNG state at each replicate's start is reconstructible
+  only by re-running \texttt{create\_scenario\_grid()} with the recorded
+  master seed, not by inspecting a stored state directly.
+\item
+  Coverage is not among the reported performance measures (see
+  Limitations for the reason and a proposed remediation).
+\end{itemize}
+
+A remediation plan for the two open gaps is recorded in
+\texttt{docs/morris-audit-2026-04-17.md} and will be taken up in a
+subsequent revision.
 
 \protect\phantomsection\label{refs}
 \begin{CSLReferences}{0}{1}
@@ -1005,33 +1155,53 @@ taken up in a subsequent revision.
 \CSLLeftMargin{4. }%
 \CSLRightInline{Bates D, Mächler M, Bolker B, Walker S. Fitting linear mixed-effects models using {lme4}. \emph{Journal of Statistical Software}. 2015;67(1):1-48. doi:\href{https://doi.org/10.18637/jss.v067.i01}{10.18637/jss.v067.i01}}
 
-\bibitem[\citeproctext]{ref-bartonMuMIn2024}
+\bibitem[\citeproctext]{ref-raudenbushHLM2002}
 \CSLLeftMargin{5. }%
+\CSLRightInline{Raudenbush SW, Bryk AS. Hierarchical linear models: Applications and data analysis methods. Published online 2002.}
+
+\bibitem[\citeproctext]{ref-snijdersMultilevelAnalysis2012}
+\CSLLeftMargin{6. }%
+\CSLRightInline{Snijders TAB, Bosker RJ. \emph{Multilevel Analysis: An Introduction to Basic and Advanced Multilevel Modeling}. 2nd ed. Sage; 2012.}
+
+\bibitem[\citeproctext]{ref-piephoCoefficientDeterminationR22019}
+\CSLLeftMargin{7. }%
+\CSLRightInline{Piepho HP. A coefficient of determination ({R2}) for generalized linear mixed models. \emph{Biometrical Journal}. 2019;61(4):860-872. doi:\href{https://doi.org/10.1002/bimj.201800270}{10.1002/bimj.201800270}}
+
+\bibitem[\citeproctext]{ref-stoffelPartR2Partitioning2021}
+\CSLLeftMargin{8. }%
+\CSLRightInline{Stoffel MA, Nakagawa S, Schielzeth H. {partR2}: Partitioning {R2} in generalized linear mixed models. \emph{PeerJ}. 2021;9:e11414. doi:\href{https://doi.org/10.7717/peerj.11414}{10.7717/peerj.11414}}
+
+\bibitem[\citeproctext]{ref-bartonMuMIn2024}
+\CSLLeftMargin{9. }%
 \CSLRightInline{Barton K. \emph{{MuMIn}: Multi-Model Inference}.; 2024. \url{https://CRAN.R-project.org/package=MuMIn}}
 
 \bibitem[\citeproctext]{ref-ludeckePerformanceAssessment2021}
-\CSLLeftMargin{6. }%
+\CSLLeftMargin{10. }%
 \CSLRightInline{Lüdecke D, Ben-Shachar MS, Patil I, Waggoner P, Makowski D. {performance}: An {R} package for assessment, comparison and testing of statistical models. \emph{Journal of Open Source Software}. 2021;6(60):3139. doi:\href{https://doi.org/10.21105/joss.03139}{10.21105/joss.03139}}
 
 \bibitem[\citeproctext]{ref-nakagawaUpdatedArticleCoefficient2017}
-\CSLLeftMargin{7. }%
+\CSLLeftMargin{11. }%
 \CSLRightInline{Nakagawa S, Johnson PCD, Schielzeth H. The coefficient of determination {R2} and intra-class correlation coefficient from generalized linear mixed-effects models revisited and expanded. \emph{Journal of the Royal Society Interface}. 2017;14(134):20170213. doi:\href{https://doi.org/10.1098/rsif.2017.0213}{10.1098/rsif.2017.0213}}
 
 \bibitem[\citeproctext]{ref-edwardsR2StatisticFixed2008}
-\CSLLeftMargin{8. }%
+\CSLLeftMargin{12. }%
 \CSLRightInline{Edwards LJ, Muller KE, Wolfinger RD, Qaqish BF, Schabenberger O. An {R2} statistic for fixed effects in the linear mixed model. \emph{Statistics in Medicine}. 2008;27(29):6137-6157. doi:\href{https://doi.org/10.1002/sim.3429}{10.1002/sim.3429}}
 
 \bibitem[\citeproctext]{ref-jaegerR2glmmSemiPartialR22017}
-\CSLLeftMargin{9. }%
+\CSLLeftMargin{13. }%
 \CSLRightInline{Jaeger BC, Edwards LJ, Das K, Sen PK. An {R2} statistic for fixed effects in the generalized linear mixed model. \emph{Journal of Applied Statistics}. 2017;44(6):1086-1105. doi:\href{https://doi.org/10.1080/02664763.2016.1193725}{10.1080/02664763.2016.1193725}}
 
 \bibitem[\citeproctext]{ref-xuMeasuringExplainedVariation2003}
-\CSLLeftMargin{10. }%
+\CSLLeftMargin{14. }%
 \CSLRightInline{Xu R. Measuring explained variation in linear mixed effects models. \emph{Statistics in Medicine}. 2003;22(22):3527-3541. doi:\href{https://doi.org/10.1002/sim.1572}{10.1002/sim.1572}}
 
 \bibitem[\citeproctext]{ref-snijdersExplainedVariationMultilevel1994}
-\CSLLeftMargin{11. }%
+\CSLLeftMargin{15. }%
 \CSLRightInline{Snijders TAB, Bosker RJ. Modeled variance in two-level models. \emph{Sociological Methods and Research}. 1994;22(3):342-363. doi:\href{https://doi.org/10.1177/0049124194022003004}{10.1177/0049124194022003004}}
+
+\bibitem[\citeproctext]{ref-burtonDesignAnalysisMonteCarlo2006}
+\CSLLeftMargin{16. }%
+\CSLRightInline{Burton A, Altman DG, Royston P, Holder RL. The design of simulation studies in medical statistics. \emph{Statistics in Medicine}. 2006;25(24):4279-4292. doi:\href{https://doi.org/10.1002/sim.2673}{10.1002/sim.2673}}
 
 \end{CSLReferences}
 

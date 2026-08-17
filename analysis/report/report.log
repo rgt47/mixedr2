@@ -1,4 +1,4 @@
-This is XeTeX, Version 3.141592653-2.6-0.999998 (TeX Live 2026) (preloaded format=xelatex 2026.3.22)  16 AUG 2026 10:09
+This is XeTeX, Version 3.141592653-2.6-0.999998 (TeX Live 2026) (preloaded format=xelatex 2026.3.22)  16 AUG 2026 16:23
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1273,43 +1273,41 @@ LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(3)/m/n' will be
 \tf@toc=\write3
 \openout3 = `report.toc'.
 
-[2]
-Overfull \hbox (19.19827pt too wide) in paragraph at lines 297--307
+[2] [3]
+Overfull \hbox (23.26839pt too wide) in paragraph at lines 311--321
 []\TU/lmr/m/n/10.95 This approach is implemented in \TU/lmtt/m/n/10.95 MuMIn::r
 .squaredGLMM()$[]$ \TU/lmr/m/n/10.95 and \TU/lmtt/m/n/10.95 performance::r2_nak
 agawa()$[]$\TU/lmr/m/n/10.95 .
  []
 
-[3] [4]
+[4]
 LaTeX Font Info:    Font shape `TU/lmtt/bx/n' in size <10.95> not available
-(Font)              Font shape `TU/lmtt/b/n' tried instead on input line 400.
+(Font)              Font shape `TU/lmtt/b/n' tried instead on input line 414.
+[5]
 LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(1)/m/n' will be
-(Font)              scaled to size 10.0pt on input line 428.
+(Font)              scaled to size 10.0pt on input line 460.
 LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(1)/m/n' will be
-(Font)              scaled to size 7.0pt on input line 428.
+(Font)              scaled to size 7.0pt on input line 460.
 LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(2)/m/n' will be
-(Font)              scaled to size 10.00092pt on input line 428.
+(Font)              scaled to size 10.00092pt on input line 460.
 LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(2)/m/n' will be
-(Font)              scaled to size 7.00064pt on input line 428.
+(Font)              scaled to size 7.00064pt on input line 460.
 LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(3)/m/n' will be
-(Font)              scaled to size 9.99893pt on input line 428.
+(Font)              scaled to size 9.99893pt on input line 460.
 LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(3)/m/n' will be
-(Font)              scaled to size 6.99925pt on input line 428.
-
-LaTeX Warning: `!h' float specifier changed to `!ht'.
-
-[5] [6] [7]
+(Font)              scaled to size 6.99925pt on input line 460.
+[6] [7] [8]
 File: report_files/report_files/figure-latex/fig-bias-heatmap-1.pdf Graphic fil
 e (type pdf)
 <use report_files/report_files/figure-latex/fig-bias-heatmap-1.pdf>
-[8]
+[9]
 File: report_files/report_files/figure-latex/fig-distributions-1.pdf Graphic fi
 le (type pdf)
 <use report_files/report_files/figure-latex/fig-distributions-1.pdf>
 File: report_files/report_files/figure-latex/fig-monotonicity-1.pdf Graphic fil
 e (type pdf)
 <use report_files/report_files/figure-latex/fig-monotonicity-1.pdf>
-[9] [10]
+[10] [11]
 File: report_files/report_files/figure-latex/fig-mse-interaction-1.pdf Graphic 
 file (type pdf)
 <use report_files/report_files/figure-latex/fig-mse-interaction-1.pdf>
@@ -1319,32 +1317,53 @@ LaTeX Warning: `!h' float specifier changed to `!ht'.
 
 LaTeX Warning: `!h' float specifier changed to `!ht'.
 
-[11] [12] [13] [14]
-Underfull \hbox (badness 1371) in paragraph at lines 936--948
-\TU/lmr/m/n/10.95 the ADEMP simulation machinery), \TU/lmtt/m/n/10.95 lme4 \TU/
-lmr/m/n/10.95 (the underlying linear-mixed-effects fitter),
+[12] [13] [14] [15] [16]
+Overfull \hbox (41.41031pt too wide) in paragraph at lines 1059--1083
+[]\TU/lmr/bx/n/10.95 Random-number generator. \TU/lmtt/m/n/10.95 analysis/scrip
+ts/simulation.R \TU/lmr/m/n/10.95 pins \TU/lmtt/m/n/10.95 RNGkind("L[]Ecuyer-CM
+RG")
  []
 
 
-Overfull \hbox (130.94601pt too wide) in paragraph at lines 955--964
+Underfull \hbox (badness 1303) in paragraph at lines 1059--1083
+\TU/lmr/m/n/10.95 exactly once, by \TU/lmtt/m/n/10.95 set.seed(seed) \TU/lmr/m/
+n/10.95 inside \TU/lmtt/m/n/10.95 generate_lmm_data() \TU/lmr/m/n/10.95 (\TU/lm
+tt/m/n/10.95 R/generate_data.R\TU/lmr/m/n/10.95 ),
+ []
+
+
+Underfull \hbox (badness 1221) in paragraph at lines 1059--1083
+\TU/lmr/m/n/10.95 within a scenario uses \TU/lmtt/m/n/10.95 furrr::future_map_d
+fr() \TU/lmr/m/n/10.95 with \TU/lmtt/m/n/10.95 furrr_options(seed = NULL)
+ []
+
+
+Overfull \hbox (130.94601pt too wide) in paragraph at lines 1084--1093
 []\TU/lmr/bx/n/10.95 Data and code availability. \TU/lmr/m/n/10.95 Simulation o
 utputs are checkpointed at \TU/lmtt/m/n/10.95 analysis/data/derived_data/sim_re
 sults.rds
  []
 
-[15] [16] [17] (./report.aux)
+[17]
+Overfull \hbox (18.38007pt too wide) in paragraph at lines 1118--1120
+[]\TU/lmtt/m/n/10.95 RNGkind("L[]Ecuyer-CMRG") \TU/lmr/m/n/10.95 is now pinned 
+at the top of \TU/lmtt/m/n/10.95 analysis/scripts/simulation.R\TU/lmr/m/n/10.95
+ ,
+ []
+
+[18] [19] (./report.aux)
  ***********
 LaTeX2e <2025-11-01>
 L3 programming layer <2026-01-19>
  ***********
  ) 
 Here is how much of TeX's memory you used:
- 22613 strings out of 468168
- 415175 string characters out of 5432815
- 1045962 words of memory out of 5000000
- 50978 multiletter control sequences out of 15000+600000
+ 22619 strings out of 468168
+ 415391 string characters out of 5432815
+ 1048077 words of memory out of 5000000
+ 50984 multiletter control sequences out of 15000+600000
  638179 words of font info for 123 fonts, out of 8000000 for 9000
  1348 hyphenation exceptions out of 8191
- 90i,12n,114p,1003b,636s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ 90i,13n,114p,1003b,636s stack positions out of 10000i,1000n,20000p,200000b,200000s
 
-Output written on report.pdf (17 pages).
+Output written on report.pdf (19 pages).

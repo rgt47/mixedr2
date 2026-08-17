@@ -1,6 +1,7 @@
 ---
-title: 'Comparing R-Squared Measures for Linear Mixed Models:
-  A Monte Carlo Simulation Study'
+title: 'Bias, Precision, and Monotonicity of Marginal and Conditional
+  R-Squared for Linear Mixed Models: A Monte Carlo Comparison of the
+  Nakagawa-Schielzeth and Johnson Estimators'
 author: 'Ronald G. Thomas, Ph.D.\thanks{Wertheim School of Public Health, UCSD; ORCID: 0000-0003-1686-4965}'
 date: '`r format(Sys.Date(), "%B %d, %Y")`'
 output:
@@ -54,29 +55,44 @@ results <- readRDS('../data/derived_data/sim_results.rds')
 summary_table <- summarize_all_scenarios(results)
 ```
 
+```{r design-summary}
+# Design parameters pulled from the executed grid (summary_table),
+# not hard-coded, so the Abstract cannot silently drift from the
+# grid that actually produced sim_results.rds.
+icc_levels <- sort(unique(summary_table$icc))
+r2m_levels <- sort(unique(summary_table$target_r2m))
+n_sim_per_scenario <- unique(summary_table$n_sim)
+n_scenarios <- nrow(summary_table)
+total_fits <- sum(summary_table$n_sim)
+fmt_levels <- function(x) paste(sprintf('%.2f', x), collapse = ', ')
+```
+
 # Abstract
 
 **Background.** The coefficient of determination $R^2$ is
 unambiguous in ordinary linear regression but admits no single
 definition for linear mixed-effects models (LMMs). The
 proliferation of competing $R^2$ measures has left applied
-researchers with limited guidance on which to report, and no
-systematic simulation study has compared their statistical
-properties under controlled conditions where the true
-variance-explained is known analytically.
+researchers with limited guidance on which to report. Existing
+comparisons of the Nakagawa-Schielzeth and Johnson estimators
+are largely illustrative or closed-form; a replicated Monte
+Carlo evaluation of their bias, MSE, and monotonicity across a
+designed factorial grid with known ground truth has been
+lacking.
 
 **Methods.** We conduct an ADEMP-compliant Monte Carlo simulation
 [@morrisUsingSimulationStudies2019] comparing the
 @nakagawaGeneralSimpleMethod2013 and
 @johnsonExtensionNakagawaSchielzeth2014 $R^2$ measures across
-a 32-scenario factorial defined by the random-effects structure
-(intercept-only, random-slopes), intra-class correlation
-(ICC $\in \{0.1, 0.5\}$), target marginal $R^2$
-($\{0.1, 0.5\}$), and sample size ($J \in \{20, 50\}$ clusters
-crossed with $n \in \{5, 20\}$ observations per cluster). Each
-scenario is evaluated at 1{,}000 replicates; performance
-measures are reported with Monte Carlo standard errors per
-@morrisUsingSimulationStudies2019, including bias, MSE,
+a `r n_scenarios`-scenario factorial defined by the random-effects
+structure (intercept-only, random-slopes), intra-class correlation
+(ICC $\in \{`r fmt_levels(icc_levels)`\}$), target marginal $R^2$
+($\{`r fmt_levels(r2m_levels)`\}$), and sample size ($J \in \{20, 50\}$
+clusters crossed with $n \in \{5, 20\}$ observations per cluster).
+Each scenario is evaluated at `r n_sim_per_scenario[1]` replicates
+(`r format(total_fits, big.mark = ',')` model fits in total);
+performance measures are reported with Monte Carlo standard errors
+per @morrisUsingSimulationStudies2019, including bias, MSE,
 empirical SE, monotonicity rate, and the rate of singular fits.
 
 **Results.** Both methods provide approximately unbiased estimates
@@ -120,7 +136,9 @@ which to report.
 This ambiguity has practical consequences. Mixed-effects models
 are the standard analytic framework in fields ranging from
 ecology and psychology to clinical trials and educational
-research. Reporting effect sizes and variance-explained
+research
+[@raudenbushHLM2002; @snijdersMultilevelAnalysis2012]. Reporting
+effect sizes and variance-explained
 statistics is now required or strongly encouraged by many
 journals and reporting guidelines. Yet when investigators report
 $R^2$ for an LMM, the particular definition employed -- and its
@@ -129,16 +147,26 @@ is rarely discussed. Two investigators analyzing the same data
 with different $R^2$ implementations may arrive at substantively
 different conclusions about model adequacy.
 
-Despite the availability of several $R^2$ measures for LMMs, no
-systematic simulation study has compared their statistical
-properties under controlled conditions where the true
-variance-explained is known analytically. We address this gap. We compare the two most widely used
+Despite the availability of several $R^2$ measures for LMMs, a
+replicated Monte Carlo comparison of their bias, precision, and
+monotonicity properties under controlled, known-truth conditions
+has been lacking specifically for the two most widely reported
+estimators. Related work exists but does not fill this gap:
+@piephoCoefficientDeterminationR22019 offers a methodological
+commentary and worked examples rather than a factorial simulation
+study, and @stoffelPartR2Partitioning2021 introduce the `partR2`
+package for semi-partial variance decomposition, a complementary
+but distinct estimand from the marginal/conditional split evaluated
+here. We address the remaining gap for the
+two-method case. We compare the two most widely used
 approaches -- @nakagawaGeneralSimpleMethod2013 and
 @johnsonExtensionNakagawaSchielzeth2014 -- via Monte Carlo
 simulation following the ADEMP framework
-[@morrisUsingSimulationStudies2019]. Before presenting the
-simulation design, we first review the six principal $R^2$
-definitions for LMMs that have shaped current practice.
+[@morrisUsingSimulationStudies2019]. This paper does not attempt to
+displace or benchmark against the broader landscape of $R^2$
+proposals; before presenting the simulation design, we briefly
+review six principal $R^2$ definitions for LMMs to situate the two
+compared methods, only two of which are evaluated empirically.
 
 ## R-Squared Measures for Linear Mixed Models
 
@@ -290,6 +318,24 @@ agree closely, but discrepancies can arise with unbalanced data
 or complex random-effects structures. Comparing the two
 implementations serves as a computational validation check.
 
+### The `partR2` Package (Stoffel et al., 2021)
+
+@stoffelPartR2Partitioning2021 implement `partR2`, which extends
+the Nakagawa-Schielzeth marginal/conditional split to a
+*semi-partial* decomposition: the marginal $R^2$ is further
+attributed to individual fixed effects or predictor sets, in a
+spirit similar to Jaeger et al. (2017) but built directly on the
+Nakagawa-Schielzeth variance definitions and implemented for both
+LMMs and GLMMs with parametric-bootstrap confidence intervals.
+`partR2` postdates and is compatible with, rather than
+competing against, the Nakagawa-Schielzeth/Johnson framework
+evaluated here; it answers a different question (which predictors
+explain variance) than the one this study addresses (how
+accurately do the two whole-model $R^2$ estimators recover the
+truth). It is not included in the empirical comparison because it
+targets predictor-level attribution rather than the whole-model
+$R^2_m$/$R^2_c$ estimands studied here.
+
 ## Summary of Methods
 
 Table \ref{tab:methods-summary} summarizes the six approaches.
@@ -347,19 +393,38 @@ kable(
   )
 ```
 
-The present study focuses on the Nakagawa-Schielzeth and Johnson
-methods, which are the most frequently reported in applied
-research and which jointly account for the vast majority of
-$R^2$ values published for LMMs. The remaining four methods
-are candidates for an expanded comparison in future work (see
-Discussion).
+Table \ref{tab:methods-summary} situates all six approaches, but
+only the first two rows (Nakagawa-Schielzeth and Johnson) are
+evaluated empirically in this study; the remaining rows are
+included for context and are not simulated here. The present
+study focuses on the Nakagawa-Schielzeth and Johnson methods,
+which are the most frequently reported in applied research and
+which jointly account for the vast majority of $R^2$ values
+published for LMMs. Each of the remaining four is excluded from
+the empirical comparison for a specific reason, not merely
+deferred: Edwards et al. (2008) and Jaeger et al. (2017) target
+fixed-effects-only estimands with no conditional-$R^2$ analogue,
+so they are not directly comparable to the marginal/conditional
+pair studied here; Xu (2003) requires custom implementation with
+no maintained R package, which is out of scope for a simulation
+of this size; and the `performance` package implementation is
+numerically near-identical to `MuMIn::r.squaredGLMM()` for the
+balanced designs used in this study (see previous section), so
+including it would not add independent information beyond the
+two methods already compared. All four remain candidates for an
+expanded comparison if the design and compute budget in
+`docs/plan-full.md` are executed (see Discussion).
 
 # Simulation Design
 
 The simulation follows the ADEMP framework
 [@morrisUsingSimulationStudies2019], which structures
 simulation studies around five components: Aims, Data-generating
-mechanisms, Estimands, Methods, and Performance measures.
+mechanisms, Estimands, Methods, and Performance measures. This
+structured-design approach follows the broader recommendation
+that simulation studies in medical statistics be planned and
+reported as formally as any other empirical study
+[@burtonDesignAnalysisMonteCarlo2006].
 
 ## Aims
 
@@ -400,6 +465,25 @@ $\tau_0^2 = \sigma^2 \cdot \text{ICC} / (1 - \text{ICC})$,
 and the fixed-effect coefficients are solved to achieve the
 target $R^2_m$. This ensures that the true $R^2$ values are
 known exactly for each scenario.
+
+In random-slope scenarios, the random-slope variance is fixed
+at $\tau_1 = 0.5 \, \tau_0$ (implemented in
+`R/math_utilities.R::solve_dgp_params()`), i.e. the random
+slope's SD is set to half the random intercept's SD. This is a
+disclosed design choice, not a quantity solved for from ICC or
+target $R^2_m$: it fixes a single, moderate slope-to-intercept
+variance ratio ($\tau_1^2 / \tau_0^2 = 0.25$) so that
+`var_random = tau0^2 + tau1^2` and hence the true conditional
+$R^2$ are well-defined and reproducible across scenarios, without
+introducing a sixth crossed factor. This ratio was not varied
+factorially, so every random-slope result in this manuscript
+(Tables \ref{tab:bias-marginal}, \ref{tab:mse-table}, and
+\ref{tab:bias-conditional}) is conditional on this one value; the
+random-slope conclusions should be read as applying to this
+specific, moderate ratio and not as general claims about
+arbitrary slope-to-intercept variance ratios. A factorial
+sensitivity analysis that varies $\tau_1/\tau_0$ (e.g. across
+$\{0.25, 0.5, 1.0\}$) is a natural extension for future work.
 
 The full factorial design crosses five factors:
 
@@ -677,10 +761,35 @@ This study compared only two of the six available methods. The
 Edwards et al. likelihood-ratio approach, the Jaeger et al.
 semi-partial decomposition, the Xu level-specific framework,
 and the `performance` package implementation are natural
-candidates for an expanded comparison (plan-full.md). Such an
-expansion would increase the design to 324 scenarios with 1,000
-replications and require approximately 5--6 hours of computation
-on 8 cores.
+candidates for an expanded comparison (plan-full.md); the
+rationale for excluding each from the present empirical
+comparison is stated in the "Summary of Methods" section above.
+Such an expansion would increase the design to 324 scenarios
+with 1,000 replications and, by extrapolation from the current
+32-scenario/500-replicate run time, is *estimated* (not
+benchmarked) to require approximately 5--6 hours of computation
+on 8 cores; this figure has not been verified by a partial or
+pilot run at the expanded scale and should be treated as a rough
+projection only.
+
+The random-slope conclusions in this study (Results,
+Discussion) are conditional on a single, disclosed
+slope-to-intercept variance ratio, $\tau_1 = 0.5\,\tau_0$ (see
+Data-Generating Mechanisms), which was not varied factorially.
+They should not be read as general claims across arbitrary
+random-slope variance structures.
+
+The fitted models use `lme4`'s default correlated
+random-intercept/random-slope parameterization
+(`(1 + x1 | cluster_id)`, an unstructured $G$ matrix), whereas the
+data-generating process draws the random intercept and random
+slope independently (`R/generate_data.R`). This mismatch reflects
+standard applied practice -- most analysts fit an unstructured
+$G$ matrix without first testing whether the true intercept-slope
+correlation is zero -- but it means the fitted models estimate one
+more variance-covariance parameter than the DGP requires, which
+plausibly contributes to the elevated singular-fit rate observed
+in low-ICC random-slope scenarios (Results, Convergence).
 
 The present design is restricted to balanced clusters and
 Gaussian outcomes. Extensions to unbalanced designs, binary or
@@ -691,6 +800,18 @@ affect the relative performance of methods that decompose
 variance at the predictor level (Jaeger et al.) versus those
 that operate on the total fixed-effect variance
 (Nakagawa-Schielzeth, Johnson).
+
+Finally, this study does not report coverage of confidence or
+credible intervals for $\hat{R}^2$, a performance measure
+recommended by @morrisUsingSimulationStudies2019 and standard in
+$R^2$-estimator evaluations. It is omitted here because neither
+`MuMIn::r.squaredGLMM()` nor the trigamma extension returns an
+analytic standard error or interval for $R^2_m$/$R^2_c$;
+constructing one would require a bootstrap or delta-method
+addition to the estimation pipeline (`R/compute_r2.R`), which was
+judged out of scope for the present two-method comparison. Adding
+a bootstrap-based coverage measure is a concrete target for a
+future revision of `R/performance_metrics.R`.
 
 ## Practical Recommendations
 
@@ -759,18 +880,41 @@ project's zzcollab Docker container (image hash recorded in
 packages used by the simulation pipeline are `mixedr2` (the
 project's R package implementing the ADEMP simulation
 machinery), `lme4` (the underlying linear-mixed-effects
-fitter), `MuMIn` (Nakagawa-Schielzeth marginal and conditional
-$R^2$ via the `r.squaredGLMM` function), `performance`
-(Johnson trigamma-method extension), `furrr` and `future`
-(parallel processing), `dplyr`, `tidyr`, and `ggplot2`
-(reporting), and `rmarkdown` plus `bookdown` for the
-manuscript build.
+fitter), and `MuMIn` (both the Nakagawa-Schielzeth and Johnson
+$R^2$ estimators, via `r.squaredGLMM()` with the default and
+`method = "trigamma"` arguments respectively; see
+`R/compute_r2.R`). The `performance` package is discussed in the
+literature review as a comparator implementation of the same
+statistical method but is not invoked anywhere in the simulation
+pipeline that produced the reported numbers. Additional packages
+are `furrr` and `future` (parallel processing), `dplyr`,
+`tidyr`, and `ggplot2` (reporting), and `rmarkdown` plus
+`bookdown` for the manuscript build.
 
-**Random-number generator.** The simulation driver sets
-`set.seed(20260411)` at the top of the replicate loop and uses
-`furrr::future_map` with `.options = furrr_options(seed = TRUE)`
-for parallel-safe RNG. Per-replicate seeds derive from the
-master seed by `+ rep_idx`.
+**Random-number generator.** `analysis/scripts/simulation.R`
+pins `RNGkind("L'Ecuyer-CMRG")` once at program start, before any
+seeding, per Morris et al. (2019) Section 4.1. Per-replicate
+seeds are not derived from a running counter; instead,
+`create_scenario_grid()` (`R/generate_data.R`) calls
+`set.seed(master_seed)` once, with `master_seed = 20260306`, and
+then draws one seed per scenario-replicate via
+`sample.int(.Machine$integer.max, total_reps)`, so every one of
+the 16,000 replicate-level seeds is pre-generated and stored in
+the scenario grid before any model fitting begins. Each
+replicate's stored seed is consumed exactly once, by
+`set.seed(seed)` inside `generate_lmm_data()`
+(`R/generate_data.R`), immediately before that replicate's data
+are drawn. Parallel execution across replicates within a
+scenario uses `furrr::future_map_dfr()` with
+`furrr_options(seed = NULL)` (`R/simulation.R::run_scenario()`):
+`seed = NULL` is appropriate here, rather than a gap in the
+seeding strategy, because RNG state is already made
+reproducible explicitly by the pre-drawn, per-replicate
+`set.seed()` call described above, so `furrr`'s own parallel-safe
+seeding layer would be redundant. A reader who wants to reproduce
+a specific replicate should regenerate the scenario grid with
+`create_scenario_grid(master_seed = 20260306)` and read off that
+replicate's `seed` column, not compute `master_seed + rep_idx`.
 
 **Data and code availability.** Simulation outputs are
 checkpointed at
@@ -787,16 +931,34 @@ source is at `R/`. The manuscript source, bibliography
 ## Morris et al. (2019) ADEMP Compliance
 
 We audited this simulation study against the reporting standards
-proposed by Morris, White, and Crowther [-@morrisUsingSimulationStudies2019]. The full
-audit is at `docs/morris-audit-2026-04-17.md`.
+proposed by Morris, White, and Crowther
+[-@morrisUsingSimulationStudies2019]. This section reports the
+audit re-run against the code that produced the results in this
+manuscript, superseding the earlier
+`docs/morris-audit-2026-04-17.md` snapshot, two of whose three
+listed gaps are now closed in the code as it stands.
 
 **Verdict:** Mostly compliant.
 
-**Key gaps identified:**
+**Gaps closed since the prior audit:**
 
-- `n_sim = 500` not documented with an explicit Monte Carlo SE justification.
-- `RNGkind('L\'Ecuyer-CMRG')` not pinned.
-- Post-run `.Random.seed` not captured per replicate; coverage is not among the reported performance measures.
+- `n_sim = 500` is now documented with an explicit Monte Carlo SE
+  justification in `analysis/scripts/simulation.R` (bias MCSE
+  $\le 0.002$ at empirical SE $\approx 0.04$ requires
+  $n_{sim} \ge 400$; $n_{sim} = 500$ gives bias MCSE
+  $\approx 0.0018$).
+- `RNGkind("L'Ecuyer-CMRG")` is now pinned at the top of
+  `analysis/scripts/simulation.R`, before any seeding.
 
-A remediation plan is recorded in the audit file and will be
-taken up in a subsequent revision.
+**Gaps still open:**
+
+- Post-run `.Random.seed` is not captured per replicate, so the
+  exact RNG state at each replicate's start is reconstructible
+  only by re-running `create_scenario_grid()` with the recorded
+  master seed, not by inspecting a stored state directly.
+- Coverage is not among the reported performance measures (see
+  Limitations for the reason and a proposed remediation).
+
+A remediation plan for the two open gaps is recorded in
+`docs/morris-audit-2026-04-17.md` and will be taken up in a
+subsequent revision.

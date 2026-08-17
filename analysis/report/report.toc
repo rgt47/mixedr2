@@ -7,28 +7,29 @@
 \contentsline {subsubsection}{\numberline {2.1.4}Jaeger et al.~(2017)}{5}{subsubsection.2.1.4}%
 \contentsline {subsubsection}{\numberline {2.1.5}Xu (2003)}{5}{subsubsection.2.1.5}%
 \contentsline {subsubsection}{\numberline {2.1.6}The \texttt {performance} Package Implementation}{5}{subsubsection.2.1.6}%
-\contentsline {subsection}{\numberline {2.2}Summary of Methods}{5}{subsection.2.2}%
-\contentsline {section}{\numberline {3}Simulation Design}{6}{section.3}%
-\contentsline {subsection}{\numberline {3.1}Aims}{6}{subsection.3.1}%
-\contentsline {subsection}{\numberline {3.2}Data-Generating Mechanisms}{6}{subsection.3.2}%
-\contentsline {subsection}{\numberline {3.3}Estimands}{7}{subsection.3.3}%
-\contentsline {subsection}{\numberline {3.4}Methods Under Comparison}{7}{subsection.3.4}%
-\contentsline {subsection}{\numberline {3.5}Performance Measures}{7}{subsection.3.5}%
-\contentsline {section}{\numberline {4}Results}{8}{section.4}%
-\contentsline {subsection}{\numberline {4.1}Convergence}{8}{subsection.4.1}%
-\contentsline {subsection}{\numberline {4.2}Bias}{8}{subsection.4.2}%
-\contentsline {subsection}{\numberline {4.3}Distributions of Estimates}{9}{subsection.4.3}%
-\contentsline {subsection}{\numberline {4.4}Monotonicity}{9}{subsection.4.4}%
-\contentsline {subsection}{\numberline {4.5}MSE and Sample Size-ICC Interaction}{11}{subsection.4.5}%
-\contentsline {subsection}{\numberline {4.6}Conditional R-Squared}{11}{subsection.4.6}%
-\contentsline {subsection}{\numberline {4.7}Boundary Violations}{11}{subsection.4.7}%
-\contentsline {section}{\numberline {5}Discussion}{12}{section.5}%
-\contentsline {subsection}{\numberline {5.1}Limitations and Future Directions}{12}{subsection.5.1}%
-\contentsline {subsection}{\numberline {5.2}Practical Recommendations}{13}{subsection.5.2}%
-\contentsline {section}{\numberline {6}Conclusions}{14}{section.6}%
-\contentsline {section}{\numberline {7}Conflict of interest}{15}{section.7}%
-\contentsline {section}{\numberline {8}Funding}{15}{section.8}%
-\contentsline {section}{\numberline {9}Data availability statement}{15}{section.9}%
-\contentsline {section}{\numberline {10}Reproducibility}{15}{section.10}%
-\contentsline {section}{\numberline {11}References}{15}{section.11}%
-\contentsline {subsection}{\numberline {11.1}Morris et al.~(2019) ADEMP Compliance}{15}{subsection.11.1}%
+\contentsline {subsubsection}{\numberline {2.1.7}The \texttt {partR2} Package (Stoffel et al., 2021)}{6}{subsubsection.2.1.7}%
+\contentsline {subsection}{\numberline {2.2}Summary of Methods}{6}{subsection.2.2}%
+\contentsline {section}{\numberline {3}Simulation Design}{7}{section.3}%
+\contentsline {subsection}{\numberline {3.1}Aims}{7}{subsection.3.1}%
+\contentsline {subsection}{\numberline {3.2}Data-Generating Mechanisms}{7}{subsection.3.2}%
+\contentsline {subsection}{\numberline {3.3}Estimands}{8}{subsection.3.3}%
+\contentsline {subsection}{\numberline {3.4}Methods Under Comparison}{8}{subsection.3.4}%
+\contentsline {subsection}{\numberline {3.5}Performance Measures}{8}{subsection.3.5}%
+\contentsline {section}{\numberline {4}Results}{9}{section.4}%
+\contentsline {subsection}{\numberline {4.1}Convergence}{9}{subsection.4.1}%
+\contentsline {subsection}{\numberline {4.2}Bias}{9}{subsection.4.2}%
+\contentsline {subsection}{\numberline {4.3}Distributions of Estimates}{10}{subsection.4.3}%
+\contentsline {subsection}{\numberline {4.4}Monotonicity}{12}{subsection.4.4}%
+\contentsline {subsection}{\numberline {4.5}MSE and Sample Size-ICC Interaction}{12}{subsection.4.5}%
+\contentsline {subsection}{\numberline {4.6}Conditional R-Squared}{12}{subsection.4.6}%
+\contentsline {subsection}{\numberline {4.7}Boundary Violations}{13}{subsection.4.7}%
+\contentsline {section}{\numberline {5}Discussion}{13}{section.5}%
+\contentsline {subsection}{\numberline {5.1}Limitations and Future Directions}{14}{subsection.5.1}%
+\contentsline {subsection}{\numberline {5.2}Practical Recommendations}{16}{subsection.5.2}%
+\contentsline {section}{\numberline {6}Conclusions}{16}{section.6}%
+\contentsline {section}{\numberline {7}Conflict of interest}{16}{section.7}%
+\contentsline {section}{\numberline {8}Funding}{16}{section.8}%
+\contentsline {section}{\numberline {9}Data availability statement}{17}{section.9}%
+\contentsline {section}{\numberline {10}Reproducibility}{17}{section.10}%
+\contentsline {section}{\numberline {11}References}{18}{section.11}%
+\contentsline {subsection}{\numberline {11.1}Morris et al.~(2019) ADEMP Compliance}{18}{subsection.11.1}%

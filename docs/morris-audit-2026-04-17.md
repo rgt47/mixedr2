@@ -66,5 +66,38 @@ and a coverage performance measure.
 Morris TP, White IR, Crowther MJ. Using simulation studies to evaluate
 statistical methods. Stat Med 2019;38:2074-2102. doi:10.1002/sim.8086
 
+## 2026-08-16 re-audit addendum
+
+Re-run against the current code (triggered by
+`docs/pub_review_whitepaper_2026-08-16.md`, Major issue 3, which
+found the manuscript's in-text summary of this audit was stale and
+reported two already-closed gaps as open).
+
+- `n_sim = 500` MCSE justification: **now Met.**
+  `analysis/scripts/simulation.R` lines 24-27 contain an explicit
+  derivation (bias MCSE $\le 0.002$ at empirical SE $\approx 0.04$
+  requires $n_{sim} \ge 400$; $n_{sim} = 500$ gives MCSE
+  $\approx 0.0018$).
+- `RNGkind("L'Ecuyer-CMRG")` pin: **now Met.**
+  `analysis/scripts/simulation.R` line 15 pins it before any
+  seeding.
+- Post-run `.Random.seed` capture per replicate: **still not met.**
+  No sidecar RDS of post-replicate RNG state is written; remediation
+  step 3 above has not been implemented.
+- Coverage as a performance measure: **still not met.**
+  `R/performance_metrics.R` has no coverage function; remediation
+  step 4 above has not been implemented. The manuscript's Limitations
+  section now explicitly discloses this omission and the reason
+  (neither `MuMIn` R-squared extractor returns an analytic SE or
+  interval for $\hat{R}^2$).
+
+**Updated verdict:** Mostly compliant, narrower gap than the
+2026-04-17 audit. Remaining open items are steps 3 and 4 of the
+remediation plan above (post-run RNG-state capture; coverage as a
+performance measure). Item 5 (explicit ADEMP heading block) remains
+open as well; the manuscript uses "Simulation Design" with ADEMP
+subsections rather than a literal "ADEMP" heading, which is a
+labeling preference, not a compliance gap.
+
 ---
 *Source: ~/prj/res/17-mixed-r2/mixedr2/docs/morris-audit-2026-04-17.md*
