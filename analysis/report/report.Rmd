@@ -70,15 +70,15 @@ fmt_levels <- function(x) paste(sprintf('%.2f', x), collapse = ', ')
 # Abstract
 
 **Background.** The coefficient of determination $R^2$ is
-unambiguous in ordinary linear regression but admits no single
-definition for linear mixed-effects models (LMMs). The
+unambiguous in ordinary linear regression, but it admits no
+single definition for linear mixed-effects models (LMMs). The
 proliferation of competing $R^2$ measures has left applied
 researchers with limited guidance on which to report. Existing
 comparisons of the Nakagawa-Schielzeth and Johnson estimators
-are largely illustrative or closed-form; a replicated Monte
-Carlo evaluation of their bias, MSE, and monotonicity across a
-designed factorial grid with known ground truth has been
-lacking.
+are largely illustrative or closed-form. To the best of our
+knowledge, a replicated Monte Carlo evaluation of their bias,
+MSE, and monotonicity across a designed factorial grid with
+known ground truth has been lacking.
 
 **Methods.** We conduct an ADEMP-compliant Monte Carlo simulation
 [@morrisUsingSimulationStudies2019] comparing the
@@ -89,18 +89,18 @@ structure (intercept-only, random-slopes), intra-class correlation
 (ICC $\in \{`r fmt_levels(icc_levels)`\}$), target marginal $R^2$
 ($\{`r fmt_levels(r2m_levels)`\}$), and sample size ($J \in \{20, 50\}$
 clusters crossed with $n \in \{5, 20\}$ observations per cluster).
-Each scenario is evaluated at `r n_sim_per_scenario[1]` replicates
-(`r format(total_fits, big.mark = ',')` model fits in total);
-performance measures are reported with Monte Carlo standard errors
+We evaluate each scenario at `r n_sim_per_scenario[1]` replicates
+(`r format(total_fits, big.mark = ',')` model fits in total) and
+report performance measures with Monte Carlo standard errors
 per @morrisUsingSimulationStudies2019, including bias, MSE,
 empirical SE, monotonicity rate, and the rate of singular fits.
 
-**Results.** Both methods provide approximately unbiased estimates
-of marginal and conditional $R^2$ across the simulated
-conditions, confirming the mathematical equivalence of the two
-methods for random-intercept models. Differences emerged only
-in random-slope scenarios, where the Johnson extension showed
-modestly lower bias on theoretical grounds. Small samples
+**Results.** We find that both methods provide approximately
+unbiased estimates of marginal and conditional $R^2$ across the
+simulated conditions, confirming the mathematical equivalence of
+the two methods for random-intercept models. Differences emerged
+only in random-slope scenarios, where the Johnson extension
+showed modestly lower bias on theoretical grounds. Small samples
 ($J = 20$, $n = 5$) produced substantially wider sampling
 distributions and lower monotonicity rates than larger samples.
 Marginal $R^2$ was estimated most precisely in high-ICC,
@@ -110,12 +110,13 @@ random-slope scenarios, consistent with the known limitations
 of maximum-likelihood estimation for small variance components
 [@batesLme4LinearMixed2015].
 
-**Conclusions.** For random-intercept models the two measures are
-empirically interchangeable. For random-slope models the Johnson
-extension is preferred. Both marginal and conditional $R^2$
-should be reported, accompanied by measures of uncertainty
-when $J < 30$ or $n < 10$, and by explicit convergence
-diagnostics in low-ICC random-slope settings.
+**Conclusions.** For random-intercept models, we find the two
+measures to be empirically interchangeable. For random-slope
+models, we recommend the Johnson extension. We recommend
+reporting both marginal and conditional $R^2$, accompanied by
+measures of uncertainty when $J < 30$ or $n < 10$, and by
+explicit convergence diagnostics in low-ICC random-slope
+settings.
 
 # Introduction
 
