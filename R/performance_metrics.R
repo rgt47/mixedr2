@@ -115,7 +115,16 @@ calculate_mcse_proportion <- function(p, n_sim) {
 #' Summarize simulation performance for one scenario
 #'
 #' Computes all performance measures for a single scenario's
-#' replicate results.
+#' replicate results. Columns that are absent from `results` (for
+#' example, the misspecified-fit arm in random-intercept scenarios
+#' or in results produced by an older version of the pipeline) give
+#' NA measures.
+#'
+#' Monotonicity columns: `mono_nak`/`mono_joh` compare the marginal
+#' R-squared of the full model with that of the reduced model (a
+#' true predictor is added); `mono_*_c` do the same for the
+#' conditional R-squared. `nul_mono_*` compare the null-augmented
+#' model with the full model (a null predictor is added).
 #'
 #' @param results Tibble of replicate results (from
 #'   [run_scenario()])
@@ -129,37 +138,62 @@ summarize_performance <- function(results, true_r2m, true_r2c) {
   n_converged <- sum(results$converged, na.rm = TRUE)
   n_singular <- sum(results$singular, na.rm = TRUE)
 
+  col <- function(name) {
+    if (name %in% names(results)) results[[name]] else rep(NA, n_sim)
+  }
+
   make_metrics <- function(estimates, truth, prefix) {
+    estimates <- as.numeric(estimates)
     bias <- calculate_bias(estimates, truth)
     stats::setNames(
       c(
         bias,
         calculate_relative_bias(estimates, truth),
         calculate_variance(estimates),
+        sqrt(calculate_variance(estimates)),
         calculate_mse(estimates, truth),
         calculate_mcse_bias(estimates),
         calculate_mcse_mse(estimates, truth),
         calculate_boundary_violations(estimates)
       ),
       paste0(
-        prefix, "_",
-        c("bias", "rel_bias", "var", "mse",
-          "mcse_bias", "mcse_mse", "boundary_viol")
+        prefix, '_',
+        c('bias', 'rel_bias', 'var', 'empse', 'mse',
+          'mcse_bias', 'mcse_mse', 'boundary_viol')
       )
     )
   }
 
-  nak_m <- make_metrics(results$nak_r2m, true_r2m, "nak_m")
-  nak_c <- make_metrics(results$nak_r2c, true_r2c, "nak_c")
-  joh_m <- make_metrics(results$joh_r2m, true_r2m, "joh_m")
-  joh_c <- make_metrics(results$joh_r2c, true_r2c, "joh_c")
+  mono <- function(full, reduced) {
+    p <- calculate_monotonicity_rate(
+      as.numeric(full), as.numeric(reduced)
+    )
+    c(p, calculate_mcse_proportion(p, n_sim))
+  }
 
-  mono_nak <- calculate_monotonicity_rate(
-    results$nak_r2m, results$red_nak_r2m
-  )
-  mono_joh <- calculate_monotonicity_rate(
-    results$joh_r2m, results$red_joh_r2m
-  )
+  nak_m <- make_metrics(results$nak_r2m, true_r2m, 'nak_m')
+  nak_c <- make_metrics(results$nak_r2c, true_r2c, 'nak_c')
+  joh_m <- make_metrics(results$joh_r2m, true_r2m, 'joh_m')
+  joh_c <- make_metrics(results$joh_r2c, true_r2c, 'joh_c')
+  adj_m <- make_metrics(col('adj_r2m'), true_r2m, 'adj_m')
+  mis_m <- make_metrics(col('mis_r2m'), true_r2m, 'mis_m')
+  mis_c <- make_metrics(col('mis_r2c'), true_r2c, 'mis_c')
+
+  mono_nak <- mono(results$nak_r2m, col('red_nak_r2m'))
+  mono_joh <- mono(results$joh_r2m, col('red_joh_r2m'))
+  mono_nak_c <- mono(results$nak_r2c, col('red_nak_r2c'))
+  mono_joh_c <- mono(results$joh_r2c, col('red_joh_r2c'))
+  nul_mono_nak <- mono(col('nul_nak_r2m'), results$nak_r2m)
+  nul_mono_joh <- mono(col('nul_joh_r2m'), results$joh_r2m)
+  nul_mono_nak_c <- mono(col('nul_nak_r2c'), results$nak_r2c)
+  nul_mono_joh_c <- mono(col('nul_joh_r2c'), results$joh_r2c)
+
+  mumin_diff <- suppressWarnings(max(
+    abs(as.numeric(col('mumin_r2m')) - results$joh_r2m),
+    abs(as.numeric(col('mumin_r2c')) - results$joh_r2c),
+    na.rm = TRUE
+  ))
+  if (!is.finite(mumin_diff)) mumin_diff <- NA_real_
 
   as_tibble_row <- function(x) {
     tibble::as_tibble(as.list(x))
@@ -171,7 +205,11 @@ summarize_performance <- function(results, true_r2m, true_r2c) {
       n_converged = n_converged,
       n_singular = n_singular,
       convergence_rate = n_converged / n_sim,
+      conv_warning_rate = mean(as.logical(col('conv_warning')),
+                               na.rm = TRUE),
       singular_rate = n_singular / n_sim,
+      mis_singular_rate = mean(as.logical(col('mis_singular')),
+                               na.rm = TRUE),
       true_r2m = true_r2m,
       true_r2c = true_r2c
     ),
@@ -179,11 +217,25 @@ summarize_performance <- function(results, true_r2m, true_r2c) {
     as_tibble_row(nak_c),
     as_tibble_row(joh_m),
     as_tibble_row(joh_c),
+    as_tibble_row(adj_m),
+    as_tibble_row(mis_m),
+    as_tibble_row(mis_c),
     tibble::tibble(
-      mono_nak = mono_nak,
-      mono_joh = mono_joh,
-      mcse_mono_nak = calculate_mcse_proportion(mono_nak, n_sim),
-      mcse_mono_joh = calculate_mcse_proportion(mono_joh, n_sim)
+      mono_nak = mono_nak[1],
+      mono_joh = mono_joh[1],
+      mcse_mono_nak = mono_nak[2],
+      mcse_mono_joh = mono_joh[2],
+      mono_nak_c = mono_nak_c[1],
+      mono_joh_c = mono_joh_c[1],
+      mcse_mono_nak_c = mono_nak_c[2],
+      mcse_mono_joh_c = mono_joh_c[2],
+      nul_mono_nak = nul_mono_nak[1],
+      nul_mono_joh = nul_mono_joh[1],
+      nul_mono_nak_c = nul_mono_nak_c[1],
+      nul_mono_joh_c = nul_mono_joh_c[1],
+      mcse_nul_mono_joh = nul_mono_joh[2],
+      mcse_nul_mono_joh_c = nul_mono_joh_c[2],
+      max_abs_diff_mumin = mumin_diff
     )
   )
 }

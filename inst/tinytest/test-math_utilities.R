@@ -68,3 +68,26 @@ expect_error(solve_dgp_params(0, 0.3))
 expect_error(solve_dgp_params(1, 0.3))
 expect_error(solve_dgp_params(0.3, 0))
 expect_error(solve_dgp_params(0.3, 1))
+
+# tau_ratio: the default reproduces the hard-coded 0.5 of the main
+# simulation; other ratios scale tau1 and keep the target R2m
+p_def <- solve_dgp_params(0.40, 0.10, re_structure = 'slope')
+p_half <- solve_dgp_params(
+  0.40, 0.10, re_structure = 'slope', tau_ratio = 0.5
+)
+expect_identical(p_def, p_half, info = 'default tau_ratio is 0.5')
+expect_equal(p_def$tau1, 0.5 * p_def$tau0, info = 'tau1 = 0.5 tau0')
+p_one <- solve_dgp_params(
+  0.40, 0.10, re_structure = 'slope', tau_ratio = 1
+)
+expect_equal(p_one$tau1, p_one$tau0, info = 'tau_ratio = 1')
+expect_equal(p_one$true_r2m, 0.40, tolerance = 1e-12,
+             info = 'target R2m held at tau_ratio = 1')
+expect_true(p_one$true_r2c > p_def$true_r2c,
+            info = 'larger slope variance raises true R2c')
+p_int <- solve_dgp_params(
+  0.40, 0.10, re_structure = 'intercept', tau_ratio = 1
+)
+expect_equal(p_int$tau1, 0, info = 'tau_ratio ignored for intercept')
+expect_error(solve_dgp_params(0.3, 0.3, tau_ratio = 0),
+             info = 'tau_ratio must be positive')

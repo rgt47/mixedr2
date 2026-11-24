@@ -99,5 +99,24 @@ open as well; the manuscript uses "Simulation Design" with ADEMP
 subsections rather than a literal "ADEMP" heading, which is a
 labeling preference, not a compliance gap.
 
+## 2026-11-23 addendum
+
+Recorded by `docs/pub_review_deferred_2026-11-23.md`.
+
+- Post-run `.Random.seed` capture per replicate: **now Met in
+  substance, by a different route.** Each replicate calls
+  `set.seed()` on its own pre-drawn seed (`R/generate_data.R`), so
+  its RNG state is fixed by that seed and the RNG kind and nothing
+  carries between replicates. `analysis/scripts/check_seed_reproduction.R`
+  regenerated 64 replicates (first and last of each of 32
+  scenarios) from their seeds and matched all 17 stored R-squared
+  columns of `sim_results.rds` exactly
+  (`analysis/data/derived_data/seed_reproduction_check.csv`).
+  `generate_simulated_results()` now also stores each replicate's
+  seed; the current results file predates that change.
+- Coverage as a performance measure: **still not met.** Not
+  implemented; a parametric bootstrap at the full design was timed
+  at roughly one to three days of single-threaded compute.
+
 ---
 *Source: ~/prj/res/17-mixed-r2/mixedr2/docs/morris-audit-2026-04-17.md*

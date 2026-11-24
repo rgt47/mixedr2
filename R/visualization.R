@@ -202,7 +202,7 @@ plot_sample_size_icc_interaction <- function(summary_data) {
   ggplot2::ggplot(
     plot_data,
     ggplot2::aes(
-      x = total_n, y = nak_m_mse,
+      x = total_n, y = joh_m_mse,
       color = factor(icc), shape = re_structure
     )
   ) +
@@ -215,7 +215,7 @@ plot_sample_size_icc_interaction <- function(summary_data) {
     ) +
     ggplot2::labs(
       x = "Total sample size (J x n)",
-      y = "MSE (Nakagawa marginal)",
+      y = "MSE (Johnson marginal)",
       color = "ICC",
       shape = "RE structure"
     ) +

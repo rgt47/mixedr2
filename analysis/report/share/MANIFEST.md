@@ -6,3 +6,6 @@
 |---|---|---|---|
 | `report-2026-08-16-1008-e1f2488-wip.pdf` | `~/prj/res/17-mixed-r2/mixedr2/analysis/report/report.Rmd` | `e1f2488-wip` | 2026-08-16 10:08 PDT |
 | `report-2026-08-16-1622-e0084d3-wip.pdf` | `~/prj/res/17-mixed-r2/mixedr2/analysis/report/report.Rmd` | `e0084d3-wip` | 2026-08-16 16:22 PDT |
+| `report-2026-11-17-1826-662dbee-wip.pdf` | `~/prj/res/17-mixed-r2/mixedr2/analysis/report/report.Rmd` | `662dbee-wip` | 2026-11-17 18:26 PST |
+| `report-2026-11-17-1832-662dbee-wip.pdf` | `~/prj/res/17-mixed-r2/mixedr2/analysis/report/report.Rmd` | `662dbee-wip` | 2026-11-17 18:32 PST |
+| `report-2026-11-23-1257-662dbee-wip.pdf` | `~/prj/res/17-mixed-r2/mixedr2/analysis/report/report.Rmd` | `662dbee-wip` | 2026-11-23 12:57 PST |

@@ -46,3 +46,14 @@ expect_equal(length(unique(grid$scenario_id)), n_scenarios)
 # create_scenario_grid seeds are unique
 grid <- create_scenario_grid(n_sim = 10)
 expect_equal(length(unique(grid$seed)), nrow(grid))
+
+# tau_ratio = NULL leaves the main-simulation grid unchanged; a
+# supplied ratio only adds a column
+expect_false('tau_ratio' %in% names(grid),
+             info = 'default grid has no tau_ratio column')
+grid_tau <- create_scenario_grid(n_sim = 10, tau_ratio = 1)
+expect_identical(
+  grid_tau[, names(grid)], grid,
+  info = 'tau_ratio does not change scenario IDs or seeds'
+)
+expect_true(all(grid_tau$tau_ratio == 1), info = 'tau_ratio stored')

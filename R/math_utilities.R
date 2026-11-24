@@ -30,6 +30,10 @@
 #' @param n_fixed Number of fixed-effect predictors
 #' @param re_structure One of 'intercept' or 'slope'
 #' @param sigma2 Residual variance (default 1)
+#' @param tau_ratio Ratio of the random-slope SD to the
+#'   random-intercept SD, tau1 / tau0, used when
+#'   `re_structure = 'slope'` (default 0.5, the value used in the
+#'   main simulation)
 #' @return Named list with beta (vector), tau0, tau1, sigma,
 #'   true_r2m, true_r2c, true_icc
 #' @export
@@ -37,13 +41,15 @@ solve_dgp_params <- function(target_r2m,
                              target_icc,
                              n_fixed = 2,
                              re_structure = c("intercept", "slope"),
-                             sigma2 = 1) {
+                             sigma2 = 1,
+                             tau_ratio = 0.5) {
   re_structure <- match.arg(re_structure)
   stopifnot(
     target_r2m > 0, target_r2m < 1,
     target_icc > 0, target_icc < 1,
     n_fixed >= 1,
-    sigma2 > 0
+    sigma2 > 0,
+    length(tau_ratio) == 1, tau_ratio > 0
   )
 
   sigma <- sqrt(sigma2)
@@ -54,7 +60,7 @@ solve_dgp_params <- function(target_r2m,
     tau1 <- 0
     var_random <- tau0_sq
   } else {
-    tau1 <- tau0 * 0.5
+    tau1 <- tau0 * tau_ratio
     var_random <- tau0_sq + tau1^2
   }
 

@@ -7,6 +7,9 @@
 #' @param cluster_size Observations per cluster (n)
 #' @param params List from [solve_dgp_params()]
 #' @param seed Integer seed for reproducibility
+#' @param n_null Number of additional N(0,1) predictors with true
+#'   coefficient zero (default 0). They are named after the true
+#'   predictors, e.g. x3 when there are two true predictors.
 #' @return A tibble with columns: y, x1, x2, ..., cluster_id
 #' @importFrom tibble tibble
 #' @importFrom stats rnorm
@@ -14,7 +17,8 @@
 generate_lmm_data <- function(n_clusters,
                               cluster_size,
                               params,
-                              seed = NULL) {
+                              seed = NULL,
+                              n_null = 0) {
   if (!is.null(seed)) set.seed(seed)
 
   n_total <- n_clusters * cluster_size
@@ -47,6 +51,14 @@ generate_lmm_data <- function(n_clusters,
   dat <- tibble::as_tibble(as.data.frame(x_mat))
   dat$y <- y
   dat$cluster_id <- cluster_id
+
+  # Null predictors are drawn after every DGP quantity, so adding
+  # them leaves y, x1, ..., x_p identical for a given seed.
+  if (n_null > 0) {
+    for (k in seq_len(n_null)) {
+      dat[[paste0('x', n_fixed + k)]] <- rnorm(n_total)
+    }
+  }
   dat
 }
 
@@ -65,9 +77,13 @@ generate_lmm_data <- function(n_clusters,
 #' @param re_structures Vector of random-effects structures
 #'   (default c('intercept', 'slope'))
 #' @param master_seed Seed for generating per-replicate seeds
+#' @param tau_ratio Optional scalar tau1 / tau0 for random-slope
+#'   scenarios. `NULL` (default) adds no column, so the grid, its
+#'   scenario IDs and its seeds are exactly those of the main
+#'   simulation, and [run_scenario()] uses 0.5.
 #' @return A tibble with one row per scenario-replicate, columns:
 #'   scenario_id, n_clusters, cluster_size, icc, target_r2m,
-#'   re_structure, rep_id, seed
+#'   re_structure, rep_id, seed (and tau_ratio when supplied)
 #' @importFrom tibble tibble
 #' @export
 create_scenario_grid <- function(n_sim = 500,
@@ -78,7 +94,8 @@ create_scenario_grid <- function(n_sim = 500,
                                  re_structures = c(
                                    "intercept", "slope"
                                  ),
-                                 master_seed = 20260306) {
+                                 master_seed = 20260306,
+                                 tau_ratio = NULL) {
   scenarios <- expand.grid(
     n_clusters = clusters,
     cluster_size = cluster_sizes,
@@ -97,6 +114,10 @@ create_scenario_grid <- function(n_sim = 500,
   grid <- scenarios[rep(seq_len(n_scenarios), each = n_sim), ]
   grid$rep_id <- rep(seq_len(n_sim), times = n_scenarios)
   grid$seed <- all_seeds
+  if (!is.null(tau_ratio)) {
+    stopifnot(length(tau_ratio) == 1, tau_ratio > 0)
+    grid$tau_ratio <- tau_ratio
+  }
   rownames(grid) <- NULL
   tibble::as_tibble(grid)
 }

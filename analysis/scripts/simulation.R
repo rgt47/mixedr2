@@ -1,6 +1,8 @@
 # Top-level simulation driver for plan-short.md
-# 32 scenarios x 500 reps = 16,000 fits
-# Run time: ~10 min on 8 cores
+# 32 scenarios x 500 reps = 16,000 replicate data sets, each fitted
+# 3 times (4 in random-slope scenarios: full, reduced, null-augmented,
+# omitted-slope). Run time: about 19 to 24 min with 7 workers on a
+# shared machine (2026-11-17); expect less on an idle one.
 #
 # Usage (from project root inside container):
 #   Rscript analysis/scripts/simulation.R
@@ -21,9 +23,10 @@ if (pilot) {
   n_sim <- 10
   message("=== PILOT RUN (10 reps) ===")
 } else {
-  # n_sim justification (Morris §5.3): for bias MCSE <= 0.002 at
-  # empirical SE ~ 0.04, n_sim >= 400. n_sim = 500 gives bias MCSE
-  # approximately 0.0018, comfortably within target. For coverage
+  # n_sim justification (Morris §5.3): bias MCSE = empSE / sqrt(n_sim).
+  # Observed empirical SE of the R2m estimates ranges from about 0.016
+  # to 0.079 across cells, so n_sim = 500 gives a worst-cell bias MCSE
+  # of about 0.0035 and a typical one below 0.002. For coverage
   # MCSE <= 1 pp at 0.95, n_sim >= 475.
   n_sim <- 500
   message("=== FULL RUN (500 reps) ===")
